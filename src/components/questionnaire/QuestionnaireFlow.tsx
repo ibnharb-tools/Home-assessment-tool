@@ -23,8 +23,17 @@ const stepDescriptions = [
 
 export function QuestionnaireFlow() {
   const router = useRouter();
-  const { data, currentStep, totalSteps, next, prev, setStep } =
-    useQuestionnaireStore();
+  const {
+    data,
+    currentStep,
+    totalSteps,
+    next,
+    prev,
+    setStep,
+    setStatus,
+    setAssessment,
+    setError: setStoreError,
+  } = useQuestionnaireStore();
   const [direction, setDirection] = useState(1);
   const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -82,8 +91,10 @@ export function QuestionnaireFlow() {
   };
 
   const submit = () => {
-    // Phase 4 triggers the AI assessment on /results. For now we navigate with
-    // the collected data persisted in the store.
+    // Clear any prior result so /results runs a fresh assessment, then navigate.
+    setAssessment(null);
+    setStoreError(null);
+    setStatus("idle");
     router.push("/results");
   };
 

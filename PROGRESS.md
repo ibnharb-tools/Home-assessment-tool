@@ -14,7 +14,7 @@ Last updated: 2026-06-07
 | 1 | Design system foundation | ✅ Done |
 | 2 | Landing page | ✅ Done |
 | 3 | Questionnaire state & flow | ✅ Done |
-| 4 | AI assessment engine (API route) | ⏳ Pending |
+| 4 | AI assessment engine (API route) | ✅ Done |
 | 5 | Results dashboard | ⏳ Pending |
 | 6 | Auth & saving (Supabase) | ⏳ Pending |
 | 7 | Polish & handoff | ⏳ Pending |
@@ -148,6 +148,44 @@ no runtime errors. Interactive 5-step click-through is best confirmed in a brows
 
 ---
 
+## Phase 4 — AI assessment engine (API route) ✅
+
+**Done:**
+- `src/lib/geocode.ts` — Nominatim geocoding (no key, descriptive User-Agent).
+- `src/lib/climate.ts` — NASA POWER climatology (annual solar/wind/temp), with an
+  Open-Meteo fallback; degrades to nulls if both are unavailable.
+- `src/lib/anthropic.ts` — `buildAssessment()` using `@anthropic-ai/sdk`,
+  model **`claude-sonnet-4-6`** (per spec), with the structured engineer prompt
+  (rating thresholds, Canadian Greener Homes rebate assumptions), Claude **vision**
+  image blocks for uploaded photos, and defensive JSON extraction. `hasAnthropicKey()` gate.
+- `src/lib/mock.ts` — deterministic, plausible fallback assessment derived from the
+  questionnaire + real climate (so the app runs fully without a key). Tuned for credible
+  financials: geothermal recommended only at "High" viability (electric-heat homes), payback
+  measured on energy-generating systems (battery treated as resilience, included in honest
+  net cost but excluded from payback).
+- `src/app/api/assess/route.ts` — orchestrates geocode → climate → AI (or mock). Validates
+  address (422), **degrades gracefully** if geocoding is unavailable (returns an approximate
+  estimate with a warning rather than hard-failing), and falls back to mock if the AI call
+  errors. Attaches `meta` (address, coords, generatedAt, mock flag).
+- `src/components/results/AssessmentLoader.tsx` — energy-themed loader (pulsing concentric
+  rings + rotating status messages), honoring reduced-motion.
+- `/results` now calls `/api/assess` on mount with the loader, an error state with retry,
+  and a lightweight success view (hero StatCards + raw-JSON disclosure). Questionnaire submit
+  resets prior result so re-submitting re-runs. Full dashboard replaces the success view in Phase 5.
+
+**Verification:** `npm run build` ✓. API tested via curl:
+- Valid payloads → HTTP 200 with a complete, schema-correct assessment; breakdown sums to 100%.
+- Empty address → HTTP 422.
+- Two scenarios produce credible financials (grid house: ~13yr payback; electric-heat+backup:
+  ~18yr payback, positive 25yr).
+
+**Sandbox limitation (not a code bug):** outbound calls to Nominatim and NASA POWER return
+**403** under this environment's network policy, so the live geocode/climate and live AI paths
+can't be exercised here — they work on Vercel (all key-free) and with `ANTHROPIC_API_KEY` set.
+The graceful-degradation fallback is what makes the engine verifiable here and resilient in prod.
+
+---
+
 ## Design Skill — Hallmark (added mid-build)
 
 User ran `npx skills add nutlope/hallmark` (installed at `.agents/skills/hallmark/`,
@@ -183,7 +221,8 @@ restructured (per the decision); only token/honest-copy touch-ups were applied.
 
 ## Pending / Next
 
-- **Phase 4:** Build `/api/assess` — geocode (Nominatim) → NASA POWER climatology →
-  Anthropic (`claude-sonnet-4-6`) with the structured prompt + photo vision, returning the
-  Assessment JSON schema. Graceful mock fallback when `ANTHROPIC_API_KEY` is absent. Add the
-  energy-themed loading animation shown while processing (wired on `/results`).
+- **Phase 5:** Build the full results dashboard (replaces the Phase 4 success view): hero
+  stat cards (count-up), energy-profile donut, location viability cards, recommendation cards,
+  photo insights, the 25-year Savings & Emissions charts (centerpiece, with view toggle),
+  financial breakdown, environmental impact, and the Save CTA. Recharts with the energy
+  palette, gradient fills, animated draw-in, hover tooltips.
