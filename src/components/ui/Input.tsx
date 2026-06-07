@@ -33,7 +33,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           "group flex items-center gap-3 rounded-btn bg-surface px-4 py-3 transition-all duration-200",
           "border border-line focus-within:border-line-glow",
           "focus-within:shadow-[inset_0_0_0_1px_var(--border-glow),0_0_18px_color-mix(in_srgb,var(--energy-primary)_20%,transparent)]",
-          error && "border-[#ff6b6b]"
+          error && "border-danger"
         )}
       >
         {icon && <span className="text-ink-faint shrink-0">{icon}</span>}
@@ -50,7 +50,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         {trailing && <span className="shrink-0">{trailing}</span>}
       </div>
       {error ? (
-        <p className="mt-2 text-sm text-[#ff6b6b]">{error}</p>
+        <p className="mt-2 text-sm text-danger">{error}</p>
       ) : hint ? (
         <p className="mt-2 text-sm text-ink-faint">{hint}</p>
       ) : null}

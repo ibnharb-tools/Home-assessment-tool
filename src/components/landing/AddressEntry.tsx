@@ -39,7 +39,7 @@ export function AddressEntry({ className }: { className?: string }) {
           "group flex flex-col gap-3 rounded-panel glass p-2 sm:flex-row sm:items-center sm:gap-2",
           "transition-shadow duration-300",
           "focus-within:shadow-[0_0_36px_color-mix(in_srgb,var(--energy-primary)_28%,transparent)]",
-          error && "border border-[#ff6b6b]"
+          error && "border border-danger"
         )}
       >
         <div className="flex flex-1 items-center gap-3 px-4 py-2">
@@ -69,7 +69,7 @@ export function AddressEntry({ className }: { className?: string }) {
       >
         <Check size={15} className="text-savings" />
         {error ? (
-          <span className="text-[#ff6b6b]">
+          <span className="text-danger">
             Please enter a valid address to continue.
           </span>
         ) : (

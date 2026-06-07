@@ -32,6 +32,9 @@
   /* Success/savings - green */
   --savings: #06b080;
 
+  /* Danger / validation */
+  --danger: #e5484d;
+
   /* Text */
   --text-primary: #0f1726;
   --text-secondary: #56627a;
@@ -86,6 +89,9 @@
   /* Success/savings */
   --savings: #06d6a0;
 
+  /* Danger / validation */
+  --danger: #ff6b6b;
+
   /* Text */
   --text-primary: #f0f4fc;
   --text-secondary: #94a3c4;
@@ -139,6 +145,7 @@
   --color-solar-bright: var(--solar-bright);
   --color-wind: var(--wind);
   --color-savings: var(--savings);
+  --color-danger: var(--danger);
 
   /* Text -> text-ink, text-ink-soft, text-ink-faint */
   --color-ink: var(--text-primary);

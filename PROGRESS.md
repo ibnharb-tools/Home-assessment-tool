@@ -13,7 +13,7 @@ Last updated: 2026-06-07
 | 0 | Project initialization & verification | ✅ Done |
 | 1 | Design system foundation | ✅ Done |
 | 2 | Landing page | ✅ Done |
-| 3 | Questionnaire state & flow | ⏳ Pending |
+| 3 | Questionnaire state & flow | ✅ Done |
 | 4 | AI assessment engine (API route) | ⏳ Pending |
 | 5 | Results dashboard | ⏳ Pending |
 | 6 | Auth & saving (Supabase) | ⏳ Pending |
@@ -119,6 +119,59 @@ Final pixel-level visual polish in both themes is best confirmed in a real brows
 
 ---
 
+## Phase 3 — Questionnaire state & flow ✅
+
+**Done:**
+- Shared types in `src/types/index.ts` (`QuestionnaireData`, `Assessment` + sub-types).
+- Expanded `useQuestionnaireStore` (Zustand + sessionStorage persist) to the full shape:
+  per-step data, `currentStep`/nav, appliance toggles, array toggles, plus
+  `assessment`/`status`/`error` lifecycle fields ready for Phase 4.
+- Option catalogs in `src/lib/questionnaire-options.ts` (property types, grid options,
+  renewables, 17 appliances, usage frequencies, goals, budgets, timeframes, step names).
+- Shared questionnaire controls (Hallmark-disciplined: full states, keyboard, focus rings,
+  44px targets, `overflow-wrap` on labels): `SelectableCard` (single/multi),
+  `NumberStepper`, `SegmentedControl` (animated slider), `Field`, plus an explicit
+  `Icon` registry mapping option icon-names to lucide components.
+- Five steps in `src/components/questionnaire/steps/`: Property basics, Energy connection
+  (conditional renewables + optional kWh), Appliances & usage (per-appliance quantity +
+  frequency; lighting type), Energy goals (+ budget/timeframe), Photos (drag-drop upload,
+  client-side downscale via `src/lib/image.ts`, thumbnail grid with remove).
+- `QuestionnaireFlow` shell: address confirmation chip, progress bar, "Step N of 5",
+  direction-aware slide transitions, per-step validation, Back/Next, clickable step dots,
+  "Generate my assessment" / Skip on the last step. Guards: redirects to `/` if no address.
+- `/assess` renders the flow; `/results` is a placeholder summarizing captured data
+  (replaced by the dashboard in Phase 5; AI call added in Phase 4).
+
+**Verification:** `npm run build` ✓ (7 routes, types pass). Dev server: `/`, `/assess`,
+`/results`, `/components-preview` all HTTP 200; `/assess` shows the no-address guard state;
+no runtime errors. Interactive 5-step click-through is best confirmed in a browser.
+
+---
+
+## Design Skill — Hallmark (added mid-build)
+
+User ran `npx skills add nutlope/hallmark` (installed at `.agents/skills/hallmark/`,
+symlinked to Claude Code; `skills-lock.json` at repo root). The full skill — `SKILL.md` plus
+the complete `references/**` set (macrostructures, themes, components, slop-test, color/
+typography/anti-patterns, etc.) — is present, so the full protocol's reference files are
+available for the Phase 7 polish pass if useful.
+
+**User decision: "Spec wins, Hallmark polishes."** The Everstead spec remains the source of
+truth for the design system (light glassmorphism, teal/solar/wind palette, Sora/Outfit/
+JetBrains Mono) and page structure. Hallmark's anti-slop **disciplines** are applied on top of
+everything built from here:
+- Full interactive states (default/hover/focus-visible/active/disabled/loading/error/success).
+- Motion restraint; animate transform/opacity only; honor `prefers-reduced-motion`.
+- Mobile floors verified at 320/375/414/768px (no horizontal scroll; no two-line tap targets).
+- Honest copy — no fabricated proof metrics (landing preview chart labelled "Sample").
+- Token-only colors (added `--danger` token; removed hardcoded error reds). No fake browser/
+  phone/IDE chrome. Roman headings only (no italic display).
+
+A consolidated Hallmark polish pass is planned for Phase 7. Existing Phases 0–2 were not
+restructured (per the decision); only token/honest-copy touch-ups were applied.
+
+---
+
 ## Environment Keys Needed From User (to run live)
 
 - `ANTHROPIC_API_KEY` — required for the live AI assessment. App compiles & runs without it
@@ -130,8 +183,7 @@ Final pixel-level visual polish in both themes is best confirmed in a real brows
 
 ## Pending / Next
 
-- **Phase 3:** Expand the Zustand store to the full questionnaire shape and build the
-  multi-step questionnaire (`/assess`): 5 steps (property basics, energy connection,
-  appliances & usage, energy goals, photos), animated slide transitions, progress bar,
-  validation, back/next, pre-captured address. On submit, route to a results page that
-  reads from the store (AI call comes in Phase 4).
+- **Phase 4:** Build `/api/assess` — geocode (Nominatim) → NASA POWER climatology →
+  Anthropic (`claude-sonnet-4-6`) with the structured prompt + photo vision, returning the
+  Assessment JSON schema. Graceful mock fallback when `ANTHROPIC_API_KEY` is absent. Add the
+  energy-themed loading animation shown while processing (wired on `/results`).

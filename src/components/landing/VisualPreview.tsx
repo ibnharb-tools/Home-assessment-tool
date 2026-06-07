@@ -34,6 +34,12 @@ export function VisualPreview() {
 
       <Reveal delay={0.15} className="mt-14">
         <Card padding="lg" glow className="relative overflow-hidden">
+          {/* Honest-copy: this dashboard preview uses representative sample
+              figures, not a real assessment. Labelled so it can't read as a
+              fabricated proof metric. */}
+          <span className="caption absolute right-5 top-5 rounded-full bg-surface px-3 py-1 text-ink-faint">
+            Sample
+          </span>
           {/* mini stat row */}
           <div className="grid gap-4 sm:grid-cols-3">
             <MiniStat
