@@ -15,7 +15,7 @@ Last updated: 2026-06-07
 | 2 | Landing page | ✅ Done |
 | 3 | Questionnaire state & flow | ✅ Done |
 | 4 | AI assessment engine (API route) | ✅ Done |
-| 5 | Results dashboard | ⏳ Pending |
+| 5 | Results dashboard | ✅ Done |
 | 6 | Auth & saving (Supabase) | ⏳ Pending |
 | 7 | Polish & handoff | ⏳ Pending |
 
@@ -186,6 +186,34 @@ The graceful-degradation fallback is what makes the engine verifiable here and r
 
 ---
 
+## Phase 5 — Results dashboard ✅
+
+**Done:** full dashboard in `src/components/results/`, composed by `ResultsDashboard` and
+rendered on `/results` (replaces the Phase 4 success view):
+- Header (address + headline) and hero `StatCard`s with count-up (annual production, net
+  cost, payback, CO₂/yr); mock/warning banner.
+- `EnergyProfile` — Recharts donut of the consumption breakdown with energy palette,
+  center total, legend with %, daily/monthly/peak minis, comparison callout.
+- `Viability` — Solar/Wind/Geothermal/Battery cards with rating bars + underlying data.
+- `Recommendations` — per-technology cards (recommended emphasized + glow; not-recommended
+  dimmed with explanation), system size/cost/production/coverage, placement.
+- `PhotoInsights` — gallery + AI observation callout (only when photos uploaded).
+- `SavingsCharts` — **centerpiece**: 25-year cumulative Savings & Emissions area charts with
+  a Savings/Emissions toggle, gradient fills, animated draw-in, hover tooltips, and a marked
+  break-even reference line/dot. Data shaped to accept real historical points later (FUTURE).
+- `FinancialBreakdown` — itemized cost → rebates → net, plus savings/payback/25-yr stats.
+- `EnvironmentalImpact` — CO₂, trees-equivalent, km-driving with count-up.
+- `SaveCTA` — glowing panel with "Create account to save" / "Continue without saving" and the
+  "you'll lose this" warning. (Real Supabase auth modal wired in Phase 6; a clearly-marked
+  placeholder modal stands in for now.)
+
+**Verification:** `npm run build` ✓. Rendered via a temporary mock-fed preview route (since
+the live flow needs client-side sessionStorage): all eight section headings present in the
+SSR HTML, HTTP 200, no runtime errors. Temp route removed. (No headless browser is available
+in this sandbox for a pixel screenshot; visual polish best confirmed in a browser.)
+
+---
+
 ## Design Skill — Hallmark (added mid-build)
 
 User ran `npx skills add nutlope/hallmark` (installed at `.agents/skills/hallmark/`,
@@ -221,8 +249,8 @@ restructured (per the decision); only token/honest-copy touch-ups were applied.
 
 ## Pending / Next
 
-- **Phase 5:** Build the full results dashboard (replaces the Phase 4 success view): hero
-  stat cards (count-up), energy-profile donut, location viability cards, recommendation cards,
-  photo insights, the 25-year Savings & Emissions charts (centerpiece, with view toggle),
-  financial breakdown, environmental impact, and the Save CTA. Recharts with the energy
-  palette, gradient fills, animated draw-in, hover tooltips.
+- **Phase 6:** Supabase client + schema (`assessments` table), glass email/password auth
+  modal (replacing the placeholder), save flow + success state, `/my-assessments` list and
+  `/results/[id]` (auth-gated). Commented placeholder for FUTURE Google/Apple sign-in.
+- **Phase 7:** Polish, error/empty/loading states, accessibility, responsive edges, README,
+  final `PROGRESS.md`, clean `npm run build`. (Good slot for the Hallmark polish pass.)
