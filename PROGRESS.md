@@ -11,7 +11,7 @@ Last updated: 2026-06-07
 | Phase | Description | Status |
 |-------|-------------|--------|
 | 0 | Project initialization & verification | ✅ Done |
-| 1 | Design system foundation | ⏳ Pending |
+| 1 | Design system foundation | ✅ Done |
 | 2 | Landing page | ⏳ Pending |
 | 3 | Questionnaire state & flow | ⏳ Pending |
 | 4 | AI assessment engine (API route) | ⏳ Pending |
@@ -31,6 +31,38 @@ Last updated: 2026-06-07
 - Created this `PROGRESS.md`.
 
 **Verification:** `npm run dev` → "Ready in ~361ms", `curl localhost:3000` → HTTP 200.
+
+---
+
+## Phase 1 — Design system foundation ✅
+
+**Done:**
+- Rewrote `src/app/globals.css` with the full design system:
+  - CSS variables for **both** themes (light default + dark), from spec §3.2.
+  - Tailwind v4 `@theme inline` token mapping → utilities follow the live theme
+    (`bg-base/elevated/surface/deepest`, `text-ink/-soft/-faint`,
+    `text-energy/solar/wind/savings`, `border-line/-line-glow`, `font-display/mono`,
+    `rounded-btn/card/panel`).
+  - Reusable effect classes: `.glass`, `.glass-strong`, `.glow-energy/solar/wind`,
+    `.text-gradient-energy/solar`, `.ambient-glow`, `.grid-bg` (animated), `.noise-overlay`,
+    `.orb` + `.orb-float`, `.pulse-dot`, `.caption`. Glow/orb/grid/noise intensities are
+    theme-tuned (subtler in light, richer in dark) via `--glow-strength`, `--orb-opacity`,
+    `--grid-opacity`, `--noise-opacity`. Honors `prefers-reduced-motion`.
+- Fonts loaded via `next/font/google` in `layout.tsx`: **Sora** (600/700/800),
+  **Outfit** (300/400/500/600), **JetBrains Mono** (400/500/700).
+- `next-themes` configured via `src/components/theme-provider.tsx`:
+  `attribute="data-theme"`, `defaultTheme="light"`, `enableSystem={false}`, persisted.
+  `suppressHydrationWarning` on `<html>`.
+- Core UI components in `src/components/ui/`: `Button` (primary/secondary/ghost + sizes,
+  hover lift + tap scale), `Card` (glass/solid, interactive, glow), `Input` (label/hint/error/
+  icon/trailing, focus glow), `StatCard` (+ `AnimatedNumber` count-up), `ProgressBar`
+  (animated gradient fill), `Logo` (swappable placeholder, clearly commented), `ThemeToggle`
+  (animated sun/moon). Barrel export at `ui/index.ts`. Helper `src/lib/utils.ts`
+  (`cn`, `formatCurrency`, `formatNumber`).
+- `/components-preview` page renders every component for visual verification in both themes.
+
+**Verification:** `npm run build` ✓ (compiles, types pass, all routes static).
+Dev server: `/` and `/components-preview` both HTTP 200, no console errors.
 
 ---
 
@@ -65,6 +97,7 @@ Last updated: 2026-06-07
 
 ## Pending / Next
 
-- **Phase 1:** Replace `globals.css` with the full design-system variables (light + dark),
-  load fonts (Sora, Outfit, JetBrains Mono), configure next-themes (light default), build the
-  core UI components, and a `/components-preview` page to verify them.
+- **Phase 2:** Build the full landing page — fixed glass nav (logo, theme toggle, links),
+  hero with ambient glow / animated grid / orbs and the single address-entry CTA,
+  how-it-works (3 steps), capabilities showcase, visual preview, closing CTA, footer.
+  Framer Motion entrance + scroll-reveal animations. Responsive at 375/768/1440px.

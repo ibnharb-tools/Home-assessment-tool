@@ -1,26 +1,395 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* =====================================================================
+   EVERSTEAD DESIGN SYSTEM
+   Tailwind CSS v4 (CSS-first). Theme tokens are defined as CSS variables
+   below for BOTH light (default) and dark themes, then exposed to Tailwind
+   utilities via @theme inline so utilities swap automatically with theme.
+   Theme is controlled by next-themes via the data-theme attribute on <html>.
+   ===================================================================== */
+
+/* ---------- LIGHT THEME (default) ---------- */
+:root,
+[data-theme="light"] {
+  /* Foundation - bright, airy, clean */
+  --bg-deepest: #ffffff;
+  --bg-base: #f7f9fc;
+  --bg-elevated: #ffffff;
+  --bg-surface: #eef2f8;
+
+  /* Energy accent - teal/cyan */
+  --energy-primary: #00b89f;
+  --energy-bright: #00d4b8;
+  --energy-dim: #5fd9c9;
+
+  /* Solar accent - warm amber/gold */
+  --solar: #f5a623;
+  --solar-bright: #ffb627;
+
+  /* Wind accent - cool blue */
+  --wind: #3b82c4;
+
+  /* Success/savings - green */
+  --savings: #06b080;
+
+  /* Text */
+  --text-primary: #0f1726;
+  --text-secondary: #56627a;
+  --text-tertiary: #94a0b8;
+
+  /* Borders and dividers */
+  --border-subtle: rgba(15, 23, 38, 0.08);
+  --border-glow: rgba(0, 184, 159, 0.4);
+
+  /* Glass effect (light) */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.9);
+  --card-shadow: 0 8px 32px rgba(15, 23, 38, 0.08);
+
+  /* Glow intensity (subtler in light mode) */
+  --glow-strength: 0.18;
+  --orb-opacity: 0.35;
+  --grid-opacity: 0.025;
+  --noise-opacity: 0.02;
+
+  /* Gradients */
+  --gradient-energy: linear-gradient(135deg, #00b89f 0%, #3b82c4 100%);
+  --gradient-solar: linear-gradient(135deg, #f5a623 0%, #ff6b6b 100%);
+  --gradient-hero: linear-gradient(180deg, #ffffff 0%, #f7f9fc 100%);
+  --gradient-glow: radial-gradient(
+    circle at 50% 0%,
+    rgba(0, 184, 159, 0.1) 0%,
+    transparent 55%
+  );
 }
 
+/* ---------- DARK THEME (toggle) ---------- */
+[data-theme="dark"] {
+  /* Foundation - deep space */
+  --bg-deepest: #0a0e1a;
+  --bg-base: #0f1420;
+  --bg-elevated: #161c2c;
+  --bg-surface: #1d2438;
+
+  /* Energy accent - luminous */
+  --energy-primary: #00e5c7;
+  --energy-bright: #2dffe0;
+  --energy-dim: #00a896;
+
+  /* Solar accent */
+  --solar: #ffb627;
+  --solar-bright: #ffd166;
+
+  /* Wind accent */
+  --wind: #4ea8de;
+
+  /* Success/savings */
+  --savings: #06d6a0;
+
+  /* Text */
+  --text-primary: #f0f4fc;
+  --text-secondary: #94a3c4;
+  --text-tertiary: #5a6788;
+
+  /* Borders */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-glow: rgba(0, 229, 199, 0.3);
+
+  /* Glass effect (dark) */
+  --glass-bg: rgba(29, 36, 56, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+  /* Glow intensity (richer in dark mode) */
+  --glow-strength: 0.3;
+  --orb-opacity: 0.6;
+  --grid-opacity: 0.05;
+  --noise-opacity: 0.035;
+
+  /* Gradients */
+  --gradient-energy: linear-gradient(135deg, #00e5c7 0%, #4ea8de 100%);
+  --gradient-solar: linear-gradient(135deg, #ffb627 0%, #ff6b6b 100%);
+  --gradient-hero: linear-gradient(
+    180deg,
+    #0a0e1a 0%,
+    #0f1420 50%,
+    #161c2c 100%
+  );
+  --gradient-glow: radial-gradient(
+    circle at 50% 0%,
+    rgba(0, 229, 199, 0.15) 0%,
+    transparent 60%
+  );
+}
+
+/* ---------- Tailwind token mapping (v4) ----------
+   @theme inline emits var() references so utilities follow the live theme. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Foundation -> bg-base, bg-elevated, bg-surface, bg-deepest, text-*, border-* */
+  --color-deepest: var(--bg-deepest);
+  --color-base: var(--bg-base);
+  --color-elevated: var(--bg-elevated);
+  --color-surface: var(--bg-surface);
+
+  /* Energy / accents */
+  --color-energy: var(--energy-primary);
+  --color-energy-bright: var(--energy-bright);
+  --color-energy-dim: var(--energy-dim);
+  --color-solar: var(--solar);
+  --color-solar-bright: var(--solar-bright);
+  --color-wind: var(--wind);
+  --color-savings: var(--savings);
+
+  /* Text -> text-ink, text-ink-soft, text-ink-faint */
+  --color-ink: var(--text-primary);
+  --color-ink-soft: var(--text-secondary);
+  --color-ink-faint: var(--text-tertiary);
+
+  /* Lines -> border-line, border-line-glow */
+  --color-line: var(--border-subtle);
+  --color-line-glow: var(--border-glow);
+
+  /* Fonts (loaded via next/font in layout.tsx) */
+  --font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+
+  /* Radii */
+  --radius-btn: 12px;
+  --radius-card: 16px;
+  --radius-panel: 24px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ---------- Base styles ---------- */
+@layer base {
+  * {
+    border-color: var(--border-subtle);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    font-family: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
+    color: var(--text-primary);
+  }
+
+  /* Theme-aware selection */
+  ::selection {
+    background: var(--energy-primary);
+    color: var(--bg-deepest);
+  }
+
+  /* Subtle custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-subtle);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--energy-dim);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* =====================================================================
+   REUSABLE EFFECT CLASSES
+   Glassmorphism, glow, gradient text, ambient backgrounds, noise, orbs.
+   All reference theme-aware variables so they render correctly in both
+   light and dark themes.
+   ===================================================================== */
+
+/* Glass card */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--card-shadow);
+}
+
+/* Stronger glass for nav / panels */
+.glass-strong {
+  background: var(--glass-bg);
+  backdrop-filter: blur(28px) saturate(140%);
+  -webkit-backdrop-filter: blur(28px) saturate(140%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--card-shadow);
+}
+
+/* Energy glow (theme-tuned via --glow-strength) */
+.glow-energy {
+  box-shadow: 0 0 24px
+    color-mix(in srgb, var(--energy-primary) calc(var(--glow-strength) * 100%), transparent);
+}
+.glow-solar {
+  box-shadow: 0 0 24px
+    color-mix(in srgb, var(--solar) calc(var(--glow-strength) * 100%), transparent);
+}
+.glow-wind {
+  box-shadow: 0 0 24px
+    color-mix(in srgb, var(--wind) calc(var(--glow-strength) * 100%), transparent);
+}
+
+/* Gradient text fills */
+.text-gradient-energy {
+  background: var(--gradient-energy);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.text-gradient-solar {
+  background: var(--gradient-solar);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Background gradient helpers */
+.bg-gradient-energy {
+  background-image: var(--gradient-energy);
+}
+.bg-gradient-solar {
+  background-image: var(--gradient-solar);
+}
+.bg-gradient-hero {
+  background-image: var(--gradient-hero);
+}
+
+/* Ambient radial glow layer (place as absolute/fixed child) */
+.ambient-glow {
+  background: var(--gradient-glow);
+  pointer-events: none;
+}
+
+/* Animated technical grid background */
+.grid-bg {
+  background-image: linear-gradient(
+      to right,
+      currentColor 1px,
+      transparent 1px
+    ),
+    linear-gradient(to bottom, currentColor 1px, transparent 1px);
+  background-size: 48px 48px;
+  color: var(--text-primary);
+  opacity: var(--grid-opacity);
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(
+    ellipse 80% 60% at 50% 0%,
+    #000 30%,
+    transparent 80%
+  );
+  animation: grid-drift 30s linear infinite;
+}
+
+@keyframes grid-drift {
+  from {
+    background-position: 0 0, 0 0;
+  }
+  to {
+    background-position: 48px 48px, 48px 48px;
+  }
+}
+
+/* Noise / grain overlay (CSS-only SVG fractal noise) */
+.noise-overlay {
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: var(--noise-opacity);
+  mix-blend-mode: overlay;
+}
+
+/* Floating gradient orb (heavily blurred) */
+.orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: var(--orb-opacity);
+  pointer-events: none;
+  will-change: transform;
+}
+.orb-energy {
+  background: radial-gradient(
+    circle,
+    var(--energy-primary) 0%,
+    transparent 70%
+  );
+}
+.orb-wind {
+  background: radial-gradient(circle, var(--wind) 0%, transparent 70%);
+}
+.orb-solar {
+  background: radial-gradient(circle, var(--solar) 0%, transparent 70%);
+}
+
+@keyframes orb-float {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(40px, -30px) scale(1.08);
+  }
+  66% {
+    transform: translate(-30px, 20px) scale(0.95);
+  }
+}
+.orb-float {
+  animation: orb-float 22s ease-in-out infinite;
+}
+
+/* Soft pulsing dot for caption pills / status */
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--energy-primary) 60%, transparent);
+  }
+  50% {
+    opacity: 0.6;
+    box-shadow: 0 0 0 6px transparent;
+  }
+}
+.pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* Utility: thin uppercase caption styling */
+.caption {
+  font-family: var(--font-outfit), sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
