@@ -12,7 +12,7 @@ Last updated: 2026-06-07
 |-------|-------------|--------|
 | 0 | Project initialization & verification | ✅ Done |
 | 1 | Design system foundation | ✅ Done |
-| 2 | Landing page | ⏳ Pending |
+| 2 | Landing page | ✅ Done |
 | 3 | Questionnaire state & flow | ⏳ Pending |
 | 4 | AI assessment engine (API route) | ⏳ Pending |
 | 5 | Results dashboard | ⏳ Pending |
@@ -66,6 +66,39 @@ Dev server: `/` and `/components-preview` both HTTP 200, no console errors.
 
 ---
 
+## Phase 2 — Landing page ✅
+
+**Done:**
+- Full landing page (`src/app/page.tsx`) composed from `src/components/landing/`:
+  - `Nav` — fixed glass nav; background intensifies on scroll; logo, theme toggle,
+    anchor links, "Sign in"; collapses to an animated mobile menu.
+  - `Hero` — full-viewport; ambient glow + animated grid + noise + 3 floating orbs;
+    caption pill with pulsing dot; staggered on-load reveal of headline/subhead/CTA;
+    animated scroll hint.
+  - `AddressEntry` (shared) — glass address input + integrated "Start Assessment" button,
+    captures address to the store and routes to `/assess`; inline validation;
+    "Free to try. No account needed." trust line.
+  - `HowItWorks` — 3 numbered glass step cards (ClipboardList / Sparkles / TrendingUp).
+  - `Capabilities` — 6-feature glass grid.
+  - `VisualPreview` — real embedded Recharts area chart (projected savings) + mini stats,
+    a representative dashboard preview.
+  - `ClosingCTA` — repeated address entry with strong ambient glow.
+  - `Footer` — glass-topped, logo, tagline, placeholder links, copyright.
+- `Reveal` scroll-reveal helper (fade + slide, on-mount or whileInView).
+- Minimal `useQuestionnaireStore` (Zustand + sessionStorage persist) holding the address;
+  expanded to the full questionnaire shape in Phase 3.
+- Placeholder `/assess` page confirming the captured address (replaced in Phase 3).
+- Ambient effects are theme-tuned (subtle in light, richer in dark) via the Phase 1 vars.
+
+**Verification:** `npm run build` ✓. Dev server: `/` and `/assess` HTTP 200; all six
+landing section headlines present in rendered HTML; no runtime errors.
+
+**Note:** A benign Recharts SSR warning ("width(-1)/height(-1)") prints during static
+prerender of pages containing `ResponsiveContainer`; charts size correctly in the browser.
+Final pixel-level visual polish in both themes is best confirmed in a real browser.
+
+---
+
 ## Key Decisions & Deviations
 
 1. **Project lives at the repository root**, not in a nested `everstead/` subfolder as the
@@ -97,7 +130,8 @@ Dev server: `/` and `/components-preview` both HTTP 200, no console errors.
 
 ## Pending / Next
 
-- **Phase 2:** Build the full landing page — fixed glass nav (logo, theme toggle, links),
-  hero with ambient glow / animated grid / orbs and the single address-entry CTA,
-  how-it-works (3 steps), capabilities showcase, visual preview, closing CTA, footer.
-  Framer Motion entrance + scroll-reveal animations. Responsive at 375/768/1440px.
+- **Phase 3:** Expand the Zustand store to the full questionnaire shape and build the
+  multi-step questionnaire (`/assess`): 5 steps (property basics, energy connection,
+  appliances & usage, energy goals, photos), animated slide transitions, progress bar,
+  validation, back/next, pre-captured address. On submit, route to a results page that
+  reads from the store (AI call comes in Phase 4).
