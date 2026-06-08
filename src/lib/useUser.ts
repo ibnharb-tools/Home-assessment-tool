@@ -11,14 +11,12 @@ import { getSupabase, isSupabaseConfigured } from "./supabase";
  */
 export function useUser() {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  // When Supabase isn't configured there's nothing to load, so start resolved.
+  const [loading, setLoading] = useState(isSupabaseConfigured);
 
   useEffect(() => {
     const supabase = getSupabase();
-    if (!supabase) {
-      setLoading(false);
-      return;
-    }
+    if (!supabase) return;
 
     supabase.auth.getSession().then(({ data }) => {
       setUser(data.session?.user ?? null);

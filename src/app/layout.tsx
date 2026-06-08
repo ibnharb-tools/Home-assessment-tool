@@ -28,9 +28,27 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Everstead — AI-Powered Energy Intelligence",
+  title: {
+    default: "Everstead — AI-Powered Energy Intelligence",
+    template: "%s · Everstead",
+  },
   description:
     "Discover your property's clean energy potential in minutes. No utility bill needed. AI-designed path to energy independence.",
+  applicationName: "Everstead",
+  keywords: [
+    "renewable energy",
+    "solar",
+    "wind",
+    "geothermal",
+    "energy assessment",
+    "clean energy",
+  ],
+  openGraph: {
+    title: "Everstead — AI-Powered Energy Intelligence",
+    description:
+      "Discover your property's clean energy potential in minutes. No utility bill needed.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

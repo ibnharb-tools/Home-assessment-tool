@@ -44,7 +44,8 @@ export function SelectableCard({
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-energy/60",
         selected
           ? "border-line-glow bg-surface glow-energy"
-          : "border-line bg-elevated hover:border-energy-dim hover:bg-surface/60"
+          : "border-line bg-elevated hover:border-energy-dim hover:bg-surface/60",
+        className
       )}
     >
       {iconName && (

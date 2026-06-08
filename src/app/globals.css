@@ -175,9 +175,12 @@
 
   html {
     scroll-behavior: smooth;
+    /* Mobile-safety floor: never allow horizontal scroll (use clip, not hidden). */
+    overflow-x: clip;
   }
 
   body {
+    overflow-x: clip;
     background-color: var(--bg-base);
     color: var(--text-primary);
     font-family: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
