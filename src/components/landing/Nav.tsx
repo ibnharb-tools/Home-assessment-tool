@@ -8,8 +8,9 @@ import { Logo, ThemeToggle, Button } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
 const links = [
-  { label: "How it works", href: "#how-it-works" },
-  { label: "Capabilities", href: "#capabilities" },
+  { label: "How it works", href: "/#how-it-works" },
+  { label: "About", href: "/about" },
+  { label: "What's next", href: "/future" },
 ];
 
 export function Nav() {

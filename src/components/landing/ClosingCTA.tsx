@@ -5,26 +5,23 @@ import { Reveal } from "@/components/Reveal";
 
 export function ClosingCTA() {
   return (
-    <section className="relative overflow-hidden px-6 py-28 md:py-36">
-      {/* strong ambient glow */}
+    <section className="relative overflow-hidden px-6 py-24 md:py-28">
       <div className="ambient-glow pointer-events-none absolute inset-0 -z-10" />
-      <div className="orb orb-energy orb-float -z-10 left-1/4 top-1/4 h-80 w-80" />
-      <div
-        className="orb orb-wind orb-float -z-10 right-1/4 bottom-0 h-72 w-72"
-        style={{ animationDelay: "-8s" }}
-      />
-
-      <Reveal className="mx-auto flex max-w-2xl flex-col items-center text-center">
-        <h2 className="font-display text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-          Ready to see what your{" "}
-          <span className="text-gradient-energy">home</span> can do?
-        </h2>
-        <p className="mt-5 max-w-lg text-lg text-ink-soft">
-          Start your free assessment now. No account needed to explore your
-          clean energy potential.
-        </p>
-        <div className="mt-10 flex w-full justify-center">
-          <AddressEntry />
+      <Reveal className="mx-auto max-w-[1200px]">
+        <div className="grid items-end gap-10 rounded-panel border border-line bg-elevated p-8 shadow-[var(--shadow-whisper)] md:grid-cols-12 md:p-12">
+          <div className="md:col-span-6">
+            <h2 className="font-display text-4xl font-bold leading-[1.05] tracking-tight md:text-5xl">
+              Ready to see what your{" "}
+              <span className="accent-underline">home</span> can do?
+            </h2>
+            <p className="mt-4 max-w-[46ch] text-lg text-ink-soft">
+              Start your free assessment now. No account needed to explore your
+              clean energy potential.
+            </p>
+          </div>
+          <div className="md:col-span-6 md:justify-self-end">
+            <AddressEntry />
+          </div>
         </div>
       </Reveal>
     </section>

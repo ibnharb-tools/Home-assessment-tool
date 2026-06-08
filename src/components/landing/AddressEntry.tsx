@@ -3,28 +3,35 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ArrowRight, Check, MapPin } from "lucide-react";
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui";
 import { useQuestionnaireStore } from "@/store/questionnaire";
+import { parseCoordinates } from "@/lib/geocode";
 import { cn } from "@/lib/utils";
 
 /**
- * The single clear entry point: a glass address input with an integrated
- * "Start Assessment" button. Captures the address into the store and routes
- * to the questionnaire. Reused on the hero and closing CTA sections.
+ * The single entry point: a solid address field + integrated "Start
+ * Assessment" button. Accepts a street address, a postal/ZIP code, OR raw
+ * coordinates ("lat, lon"). Starting an assessment RESETS the store first, so
+ * each new visitor begins with a clean board (nothing carries over from a
+ * previous person unless they saved to an account).
  */
 export function AddressEntry({ className }: { className?: string }) {
   const router = useRouter();
+  const reset = useQuestionnaireStore((s) => s.reset);
   const setAddress = useQuestionnaireStore((s) => s.setAddress);
   const [value, setValue] = useState("");
   const [error, setError] = useState(false);
 
   const handleStart = () => {
-    if (value.trim().length < 4) {
+    const v = value.trim();
+    // Valid if it parses as coordinates, or is a plausible address/postal code.
+    const ok = parseCoordinates(v) !== null || v.length >= 3;
+    if (!ok) {
       setError(true);
       return;
     }
-    setAddress(value.trim());
+    reset(); // clear any prior session's assessment
+    setAddress(v);
     router.push("/assess");
   };
 
@@ -35,14 +42,16 @@ export function AddressEntry({ className }: { className?: string }) {
           e.preventDefault();
           handleStart();
         }}
-        className={cn(
-          "group flex flex-col gap-3 rounded-panel glass p-2 sm:flex-row sm:items-center sm:gap-2",
-          "transition-shadow duration-300",
-          "focus-within:shadow-[0_0_36px_color-mix(in_srgb,var(--energy-primary)_28%,transparent)]",
-          error && "border border-danger"
-        )}
+        className="flex flex-col gap-2 sm:flex-row sm:items-stretch"
       >
-        <div className="flex flex-1 items-center gap-3 px-4 py-2">
+        <div
+          className={cn(
+            "flex flex-1 items-center gap-3 rounded-btn border bg-elevated px-4",
+            "min-h-[52px] transition-colors duration-150",
+            "focus-within:outline-none focus-within:border-energy",
+            error ? "border-danger" : "border-line"
+          )}
+        >
           <MapPin size={20} className="shrink-0 text-energy" />
           <input
             type="text"
@@ -51,9 +60,9 @@ export function AddressEntry({ className }: { className?: string }) {
               setValue(e.target.value);
               if (error) setError(false);
             }}
-            placeholder="Enter your address to begin"
-            aria-label="Property address"
-            className="w-full bg-transparent text-base text-ink placeholder:text-ink-faint outline-none"
+            placeholder="Address, postal code, or coordinates"
+            aria-label="Property address, postal code, or coordinates"
+            className="w-full bg-transparent py-3 text-base text-ink placeholder:text-ink-faint outline-none"
           />
         </div>
         <Button type="submit" size="lg" className="shrink-0">
@@ -61,21 +70,19 @@ export function AddressEntry({ className }: { className?: string }) {
         </Button>
       </form>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        className="mt-3 flex items-center justify-center gap-2 text-sm text-ink-faint sm:justify-start"
-      >
-        <Check size={15} className="text-savings" />
+      {/* Reserved helper row — fixed height so the error swap doesn't shift layout. */}
+      <div className="mt-3 flex min-h-[1.25rem] items-center gap-2 text-sm">
         {error ? (
           <span className="text-danger">
-            Please enter a valid address to continue.
+            Enter an address, postal code, or coordinates like “45.42, -75.70”.
           </span>
         ) : (
-          <span>Free to try. No account needed.</span>
+          <span className="inline-flex items-center gap-2 text-ink-faint">
+            <Check size={15} className="text-savings" />
+            Free to try. No account needed.
+          </span>
         )}
-      </motion.div>
+      </div>
     </div>
   );
 }

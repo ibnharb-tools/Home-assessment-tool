@@ -1,7 +1,6 @@
 "use client";
 
 import { ClipboardList, Sparkles, TrendingUp, type LucideIcon } from "lucide-react";
-import { Card } from "@/components/ui";
 import { Reveal } from "@/components/Reveal";
 
 interface Step {
@@ -16,7 +15,7 @@ const steps: Step[] = [
     num: "01",
     icon: ClipboardList,
     title: "Tell us about your home",
-    desc: "Answer a quick questionnaire about your property, appliances, and energy habits. Takes under five minutes.",
+    desc: "Answer a quick questionnaire about your property, appliances, and energy habits. Under five minutes.",
   },
   {
     num: "02",
@@ -28,7 +27,7 @@ const steps: Step[] = [
     num: "03",
     icon: TrendingUp,
     title: "See your energy future",
-    desc: "Get a detailed plan with cost estimates, savings projections, and the greenhouse gases you'll prevent.",
+    desc: "A detailed plan with cost estimates, savings projections, and the greenhouse gases you'll prevent.",
   },
 ];
 
@@ -36,34 +35,34 @@ export function HowItWorks() {
   return (
     <section
       id="how-it-works"
-      className="relative mx-auto max-w-[1200px] px-6 py-24 md:px-8 md:py-32"
+      className="mx-auto max-w-[1200px] px-6 py-24 md:px-8 md:py-28"
     >
-      <Reveal className="mx-auto max-w-2xl text-center">
-        <p className="caption text-energy">How it works</p>
-        <h2 className="mt-4 font-display text-4xl font-bold tracking-tight md:text-5xl">
+      <Reveal className="max-w-[24ch]">
+        <h2 className="font-display text-4xl font-bold leading-[1.1] tracking-tight md:text-5xl">
           From questions to clean energy
         </h2>
       </Reveal>
 
-      <div className="mt-16 grid gap-6 md:grid-cols-3">
+      <div className="mt-14 flex flex-col">
         {steps.map((step, i) => (
-          <Reveal key={step.num} delay={i * 0.12}>
-            <Card interactive className="h-full">
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-2xl font-bold text-energy [text-shadow:0_0_18px_color-mix(in_srgb,var(--energy-primary)_45%,transparent)]">
-                  {step.num}
-                </span>
-                <span className="inline-flex h-12 w-12 items-center justify-center rounded-btn bg-surface text-energy glow-energy">
-                  <step.icon size={22} />
-                </span>
+          <Reveal key={step.num} delay={i * 0.08}>
+            <div className="grid grid-cols-[auto_1fr] gap-5 border-t border-line py-8 sm:grid-cols-[6rem_auto_1fr] sm:gap-8">
+              <span className="font-mono text-3xl font-bold text-energy sm:text-4xl">
+                {step.num}
+              </span>
+              <span className="hidden h-12 w-12 items-center justify-center rounded-btn bg-surface text-energy sm:inline-flex">
+                <step.icon size={22} />
+              </span>
+              <div className="max-w-[60ch]">
+                <h3 className="font-display text-xl font-semibold md:text-2xl">
+                  {step.title}
+                </h3>
+                <p className="mt-2 text-ink-soft">{step.desc}</p>
               </div>
-              <h3 className="mt-6 font-display text-xl font-semibold md:text-2xl">
-                {step.title}
-              </h3>
-              <p className="mt-3 text-ink-soft">{step.desc}</p>
-            </Card>
+            </div>
           </Reveal>
         ))}
+        <div className="border-t border-line" />
       </div>
     </section>
   );

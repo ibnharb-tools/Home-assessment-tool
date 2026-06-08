@@ -6,11 +6,14 @@ import type { ReactNode } from "react";
 
 interface CardProps extends HTMLMotionProps<"div"> {
   children: ReactNode;
-  /** Glass variant uses theme-aware frosted background. Solid uses bg-elevated. */
+  /**
+   * Default `solid` = bg-elevated + hairline border (the standard surface).
+   * `glass` is reserved for true overlays (nav pill, modals).
+   */
   variant?: "glass" | "solid";
-  /** Adds a hover lift + shadow interaction. */
+  /** Subtle hover signal for clickable cards (border shift, no lift). */
   interactive?: boolean;
-  /** Adds a subtle energy glow. */
+  /** Retained for API compatibility; now a no-op (glow removed in de-slop). */
   glow?: boolean;
   /** Padding preset. */
   padding?: "none" | "sm" | "md" | "lg";
@@ -25,26 +28,24 @@ const paddings = {
 
 export function Card({
   children,
-  variant = "glass",
+  variant = "solid",
   interactive = false,
-  glow = false,
+  glow: _glow,
   padding = "md",
   className,
   ...props
 }: CardProps) {
+  void _glow;
   return (
     <motion.div
-      whileHover={
-        interactive
-          ? { y: -4, boxShadow: "0 16px 48px rgba(15,23,38,0.12)" }
-          : undefined
-      }
-      transition={{ type: "spring", stiffness: 300, damping: 24 }}
       className={cn(
-        "rounded-card",
-        variant === "glass" ? "glass" : "bg-elevated border border-line",
-        glow && "glow-energy",
-        interactive && "cursor-pointer",
+        "rounded-card transition-colors duration-150",
+        variant === "glass"
+          ? "glass"
+          : "bg-elevated border border-line shadow-[var(--shadow-whisper)]",
+        // One restrained signal on interactive cards: border shifts to energy.
+        interactive &&
+          "cursor-pointer hover:border-energy-dim",
         paddings[padding],
         className
       )}

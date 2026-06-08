@@ -21,20 +21,19 @@ const data = Array.from({ length: 26 }, (_, year) => ({
 
 export function VisualPreview() {
   return (
-    <section className="relative mx-auto max-w-[1200px] px-6 py-24 md:px-8 md:py-32">
-      <Reveal className="mx-auto max-w-2xl text-center">
-        <p className="caption text-energy">The dashboard</p>
-        <h2 className="mt-4 font-display text-4xl font-bold tracking-tight md:text-5xl">
-          Your energy, beautifully visualized
+    <section className="relative mx-auto max-w-[1200px] px-6 py-24 md:px-8 md:py-28">
+      <Reveal className="max-w-[28ch]">
+        <h2 className="font-display text-4xl font-bold leading-[1.1] tracking-tight md:text-5xl">
+          Your energy, in one clear dashboard
         </h2>
-        <p className="mt-4 text-lg text-ink-soft">
+        <p className="mt-4 max-w-[52ch] text-lg text-ink-soft">
           Every assessment becomes an interactive dashboard — energy profile,
           recommendations, and savings projected across 25 years.
         </p>
       </Reveal>
 
-      <Reveal delay={0.15} className="mt-14">
-        <Card padding="lg" glow className="relative overflow-hidden">
+      <Reveal delay={0.1} className="mt-12">
+        <Card padding="lg" className="relative overflow-hidden">
           {/* Honest-copy: this dashboard preview uses representative sample
               figures, not a real assessment. Labelled so it can't read as a
               fabricated proof metric. */}

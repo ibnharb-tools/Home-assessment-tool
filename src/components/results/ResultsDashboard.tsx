@@ -50,7 +50,8 @@ export function ResultsDashboard({
           <Logo />
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <Link href="/assess">
+            {/* New starts from the landing entry, which resets the board. */}
+            <Link href="/">
               <Button variant="secondary" size="sm">
                 <Plus size={16} /> New
               </Button>

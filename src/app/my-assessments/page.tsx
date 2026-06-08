@@ -52,7 +52,7 @@ export default function MyAssessmentsPage() {
           <Logo />
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <Link href="/assess">
+            <Link href="/">
               <Button variant="secondary" size="sm">
                 <Plus size={16} /> New
               </Button>

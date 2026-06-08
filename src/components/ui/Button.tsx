@@ -15,24 +15,23 @@ interface ButtonProps extends Omit<HTMLMotionProps<"button">, "children"> {
 }
 
 const base =
-  "inline-flex items-center justify-center gap-2 font-medium rounded-btn select-none transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-energy/60 disabled:opacity-50 disabled:pointer-events-none";
+  "inline-flex items-center justify-center gap-2 font-medium rounded-btn select-none whitespace-nowrap min-h-[44px] transition-colors duration-150 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-energy disabled:opacity-55 disabled:cursor-not-allowed disabled:pointer-events-none";
 
 const sizes: Record<Size, string> = {
-  sm: "text-sm px-4 py-2",
-  md: "text-base px-6 py-3", // ~16px / 16px 24px
-  lg: "text-base px-8 py-4",
+  sm: "text-sm px-4 py-2 min-h-[40px]",
+  md: "text-base px-6 py-3",
+  lg: "text-base px-7 py-3.5",
 };
 
 const variants: Record<Variant, string> = {
-  // Energy gradient, dark text for contrast on the bright gradient.
+  // Solid energy fill, dark accent-ink text (contrast-checked). No glow.
   primary:
-    "bg-gradient-energy text-[var(--bg-deepest)] font-semibold shadow-[0_0_0_rgba(0,0,0,0)] hover:shadow-[0_0_28px_color-mix(in_srgb,var(--energy-primary)_45%,transparent)]",
-  // Glass with energy outline.
+    "bg-energy text-[var(--accent-ink)] font-semibold hover:bg-energy-bright",
+  // Outlined hairline, energy text. No glass, no glow.
   secondary:
-    "glass text-energy border border-energy-dim hover:border-energy hover:shadow-[0_0_24px_color-mix(in_srgb,var(--energy-primary)_25%,transparent)]",
+    "bg-transparent text-energy border border-energy-dim hover:border-energy hover:bg-surface/50",
   // Minimal ghost link-button.
-  ghost:
-    "bg-transparent text-ink-soft hover:text-ink hover:bg-surface/60",
+  ghost: "bg-transparent text-ink-soft hover:text-ink hover:bg-surface/60",
 };
 
 export function Button({
@@ -45,9 +44,8 @@ export function Button({
 }: ButtonProps) {
   return (
     <motion.button
-      whileHover={{ scale: props.disabled ? 1 : 1.02 }}
-      whileTap={{ scale: props.disabled ? 1 : 0.98 }}
-      transition={{ type: "spring", stiffness: 400, damping: 22 }}
+      whileTap={{ scale: props.disabled ? 1 : 0.99 }}
+      transition={{ duration: 0.12, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
         base,
         sizes[size],

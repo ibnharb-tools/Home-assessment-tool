@@ -9,7 +9,6 @@ import {
   Camera,
   type LucideIcon,
 } from "lucide-react";
-import { Card } from "@/components/ui";
 import { Reveal } from "@/components/Reveal";
 
 interface Feature {
@@ -22,17 +21,17 @@ const features: Feature[] = [
   {
     icon: Gauge,
     title: "Smart energy profiling",
-    desc: "Build an accurate energy profile from your home and appliances — no utility bill required.",
+    desc: "An accurate energy profile from your home and appliances — no utility bill required.",
   },
   {
     icon: MapPinned,
-    title: "Location-specific recommendations",
+    title: "Location-specific analysis",
     desc: "Real climate data for your exact coordinates drives every recommendation.",
   },
   {
     icon: SunMedium,
     title: "Solar, wind, geothermal & battery",
-    desc: "We analyze every viable renewable technology and tell you what actually fits.",
+    desc: "Every viable renewable technology analyzed — we tell you what actually fits.",
   },
   {
     icon: Wallet,
@@ -42,7 +41,7 @@ const features: Feature[] = [
   {
     icon: LineChart,
     title: "Savings & emissions over time",
-    desc: "See cumulative savings and avoided greenhouse gases projected over 25 years.",
+    desc: "Cumulative savings and avoided greenhouse gases projected over 25 years.",
   },
   {
     icon: Camera,
@@ -55,31 +54,39 @@ export function Capabilities() {
   return (
     <section
       id="capabilities"
-      className="relative overflow-hidden px-6 py-24 md:py-32"
+      className="mx-auto max-w-[1200px] px-6 py-24 md:px-8 md:py-28"
     >
-      <div className="ambient-glow pointer-events-none absolute inset-0 -z-10" />
-      <div className="mx-auto max-w-[1200px] md:px-2">
-        <Reveal className="mx-auto max-w-2xl text-center">
-          <p className="caption text-energy">Capabilities</p>
-          <h2 className="mt-4 font-display text-4xl font-bold tracking-tight md:text-5xl">
+      <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
+        <Reveal className="lg:col-span-4">
+          <h2 className="font-display text-4xl font-bold leading-[1.1] tracking-tight md:text-5xl">
             Everything you need to go renewable
           </h2>
+          <p className="mt-4 max-w-[40ch] text-ink-soft">
+            One assessment, every angle — from the technologies worth installing
+            to the dollars and emissions they move.
+          </p>
         </Reveal>
 
-        <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((f, i) => (
-            <Reveal key={f.title} delay={(i % 3) * 0.1}>
-              <Card interactive className="h-full">
-                <span className="inline-flex h-12 w-12 items-center justify-center rounded-btn bg-surface text-energy">
-                  <f.icon size={22} />
-                </span>
-                <h3 className="mt-5 font-display text-xl font-semibold">
-                  {f.title}
-                </h3>
-                <p className="mt-2 text-ink-soft">{f.desc}</p>
-              </Card>
-            </Reveal>
-          ))}
+        <div className="lg:col-span-8">
+          <div className="grid sm:grid-cols-2">
+            {features.map((f, i) => (
+              <Reveal key={f.title} delay={(i % 2) * 0.08}>
+                <div className="flex gap-4 border-t border-line py-6 pr-2">
+                  <f.icon
+                    size={22}
+                    className="mt-0.5 shrink-0 text-energy"
+                    strokeWidth={1.75}
+                  />
+                  <div>
+                    <h3 className="font-display text-lg font-semibold">
+                      {f.title}
+                    </h3>
+                    <p className="mt-1.5 text-sm text-ink-soft">{f.desc}</p>
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </div>
     </section>

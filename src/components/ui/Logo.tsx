@@ -45,7 +45,7 @@ export function Logo({ className, asLink = true, size = "md" }: LogoProps) {
       </span>
       <span
         className={cn(
-          "font-display font-extrabold tracking-tight text-gradient-energy",
+          "font-display font-extrabold tracking-tight text-ink",
           sizes[size]
         )}
       >

@@ -3,30 +3,33 @@ import { Logo } from "@/components/ui";
 
 export function Footer() {
   return (
-    <footer className="glass-strong border-t border-line">
-      <div className="mx-auto flex max-w-[1200px] flex-col items-center justify-between gap-6 px-6 py-10 md:flex-row md:px-8">
-        <div className="flex flex-col items-center gap-3 md:items-start">
+    <footer className="border-t border-line">
+      <div className="mx-auto max-w-[1200px] px-6 py-20 md:px-8">
+        {/* Statement close (Ft5) */}
+        <p className="max-w-[20ch] font-display text-3xl font-bold leading-[1.1] tracking-tight md:text-5xl">
+          The future of energy, intelligently designed.
+        </p>
+
+        <div className="mt-16 flex flex-col gap-8 border-t border-line pt-8 md:flex-row md:items-center md:justify-between">
           <Logo />
-          <p className="text-sm text-ink-faint">
-            The future of energy, intelligently designed.
+          <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-ink-soft">
+            <Link href="/#how-it-works" className="hover:text-ink">
+              How it works
+            </Link>
+            <Link href="/about" className="hover:text-ink">
+              About
+            </Link>
+            <Link href="/future" className="hover:text-ink">
+              What&apos;s next
+            </Link>
+            <Link href="#" className="hover:text-ink">
+              Privacy
+            </Link>
+          </nav>
+          <p className="text-xs text-ink-faint">
+            © {new Date().getFullYear()} Everstead
           </p>
         </div>
-
-        <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-ink-soft">
-          <Link href="#how-it-works" className="hover:text-ink">
-            How it works
-          </Link>
-          {/* Placeholder links for MVP */}
-          <Link href="#" className="hover:text-ink">
-            Privacy
-          </Link>
-          <Link href="#" className="hover:text-ink">
-            Contact
-          </Link>
-        </nav>
-      </div>
-      <div className="border-t border-line py-5 text-center text-xs text-ink-faint">
-        © {new Date().getFullYear()} Everstead. All rights reserved.
       </div>
     </footer>
   );
