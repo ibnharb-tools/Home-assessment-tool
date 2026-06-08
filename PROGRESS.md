@@ -263,6 +263,31 @@ HTTP 200; unknown path → styled 404; no runtime errors.
 
 ---
 
+## Post-build hardening (code-review pass)
+
+Ran a high-effort code review over the logic-heavy files and fixed the real bugs found:
+- **Stuck loader on reload** — store now persists only durable questionnaire `data`/`currentStep`
+  (not transient `status`/`assessment`/`error`), so refreshing mid-request resets to `idle` and
+  re-runs instead of hanging the loader.
+- **Savings chart** — curve starts at `-netCost` (matches the headline stat); break-even marker
+  placed at the true fractional zero-crossing (was rounded off the curve); NaN-guarded; year-25
+  chip derived from the curve.
+- **Mock financials** — wind generation now contributes savings (a wind recommendation no longer
+  inflates payback); CO₂ is based only on *recommended* production (no phantom solar emissions on
+  apartments, where solar isn't recommended).
+- **Auth** — `useUser` handles a `getSession` rejection (no stuck spinner); `/my-assessments` and
+  `/results/[id]` reset stale `error`/`notFound` before refetching.
+
+Deferred as low-impact for the MVP demo (documented, not bugs in the common path): save-on-signup
+is dropped when Supabase *email confirmation* is enabled (README advises disabling it for testing;
+with it off, signup returns a session and saves immediately); `getAssessment` maps transient errors
+to "not found"; non-JPEG photo media types (our pipeline only emits downscaled JPEG).
+
+Chart rendering was also deferred to client mount (`ChartReady`) to remove the Recharts
+`width(-1)` prerender warning. Final `npm run build` ✓ and `npm run lint` ✓ (0 errors).
+
+---
+
 ## Build complete
 
 All 7 phases done, committed, and pushed to `claude/loving-mccarthy-xLyZ8`. The app builds and
