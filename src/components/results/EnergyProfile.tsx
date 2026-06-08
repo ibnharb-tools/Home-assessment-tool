@@ -4,6 +4,7 @@ import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import type { Assessment } from "@/types";
 import { Card } from "@/components/ui";
 import { Reveal } from "@/components/Reveal";
+import { ChartReady } from "@/components/ChartReady";
 import { formatNumber } from "@/lib/utils";
 
 // Energy palette cycled across breakdown categories.
@@ -36,6 +37,7 @@ export function EnergyProfile({ assessment }: { assessment: Assessment }) {
         <div className="mt-8 grid items-center gap-8 lg:grid-cols-2">
           {/* Donut */}
           <div className="relative h-64 w-full">
+            <ChartReady className="h-full w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -69,6 +71,7 @@ export function EnergyProfile({ assessment }: { assessment: Assessment }) {
                 />
               </PieChart>
             </ResponsiveContainer>
+            </ChartReady>
             {/* center total */}
             <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
               <span className="font-mono text-2xl font-bold text-ink md:text-3xl">

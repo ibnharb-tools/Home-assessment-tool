@@ -17,6 +17,7 @@ import type { Assessment } from "@/types";
 import { Card } from "@/components/ui";
 import { SegmentedControl } from "@/components/questionnaire/SegmentedControl";
 import { Reveal } from "@/components/Reveal";
+import { ChartReady } from "@/components/ChartReady";
 import { formatCurrency } from "@/lib/utils";
 
 type View = "savings" | "emissions";
@@ -86,7 +87,7 @@ export function SavingsCharts({ assessment }: { assessment: Assessment }) {
           </div>
         </div>
 
-        <div className="mt-8 h-72 w-full md:h-96">
+        <ChartReady className="mt-8 h-72 w-full md:h-96">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={data}
@@ -186,7 +187,7 @@ export function SavingsCharts({ assessment }: { assessment: Assessment }) {
               />
             </AreaChart>
           </ResponsiveContainer>
-        </div>
+        </ChartReady>
 
         {/* summary chips */}
         <div className="mt-6 flex flex-wrap gap-3">

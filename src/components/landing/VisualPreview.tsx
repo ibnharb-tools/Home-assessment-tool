@@ -11,6 +11,7 @@ import {
 import { Zap, DollarSign, Leaf } from "lucide-react";
 import { Card } from "@/components/ui";
 import { Reveal } from "@/components/Reveal";
+import { ChartReady } from "@/components/ChartReady";
 
 // Representative projected-savings data for the preview mockup.
 const data = Array.from({ length: 26 }, (_, year) => ({
@@ -63,7 +64,7 @@ export function VisualPreview() {
           </div>
 
           {/* chart */}
-          <div className="mt-8 h-64 w-full md:h-80">
+          <ChartReady className="mt-8 h-64 w-full md:h-80">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
                 data={data}
@@ -123,7 +124,7 @@ export function VisualPreview() {
                 />
               </AreaChart>
             </ResponsiveContainer>
-          </div>
+          </ChartReady>
         </Card>
       </Reveal>
     </section>
