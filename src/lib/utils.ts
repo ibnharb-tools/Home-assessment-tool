@@ -29,6 +29,25 @@ export function formatCurrency(value: number, fractionDigits = 0): string {
   }).format(value);
 }
 
+/** Sum a RoomCounts-like object into a total room count. */
+export function totalRooms(rooms: {
+  bedrooms: number;
+  bathrooms: number;
+  living: number;
+  kitchens: number;
+  garages: number;
+  other: number;
+}): number {
+  return (
+    rooms.bedrooms +
+    rooms.bathrooms +
+    rooms.living +
+    rooms.kitchens +
+    rooms.garages +
+    rooms.other
+  );
+}
+
 /** Format a number with thousands separators. */
 export function formatNumber(value: number, fractionDigits = 0): string {
   return new Intl.NumberFormat("en-US", {

@@ -96,6 +96,15 @@ export const TIMEFRAMES = [
   { id: "exploring", label: "Just exploring" },
 ] as const;
 
+export const ROOM_TYPES = [
+  { id: "bedrooms", label: "Bedrooms", icon: "BedDouble" },
+  { id: "bathrooms", label: "Bathrooms", icon: "Bath" },
+  { id: "living", label: "Living rooms", icon: "Sofa" },
+  { id: "kitchens", label: "Kitchens", icon: "CookingPot" },
+  { id: "garages", label: "Garages", icon: "Car" },
+  { id: "other", label: "Other rooms", icon: "DoorOpen" },
+] as const;
+
 export const QUESTIONNAIRE_STEPS = [
   "Property Basics",
   "Energy Connection",

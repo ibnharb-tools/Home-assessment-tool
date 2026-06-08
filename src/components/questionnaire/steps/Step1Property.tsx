@@ -1,16 +1,21 @@
 "use client";
 
 import { useQuestionnaireStore } from "@/store/questionnaire";
-import { PROPERTY_TYPES } from "@/lib/questionnaire-options";
+import { PROPERTY_TYPES, ROOM_TYPES } from "@/lib/questionnaire-options";
 import { Field } from "../Field";
 import { SelectableCard } from "../SelectableCard";
 import { NumberStepper } from "../NumberStepper";
 import { SegmentedControl } from "../SegmentedControl";
 import { Input } from "@/components/ui";
-import type { AreaUnit, Ownership, PropertyType } from "@/types";
+import { Icon } from "@/components/ui/Icon";
+import { totalRooms } from "@/lib/utils";
+import type { AreaUnit, Ownership, PropertyType, RoomCounts } from "@/types";
 
 export function Step1Property() {
   const { data, setData } = useQuestionnaireStore();
+
+  const setRoom = (key: keyof RoomCounts, value: number) =>
+    setData({ rooms: { ...data.rooms, [key]: value } });
 
   return (
     <div className="space-y-8">
@@ -28,25 +33,45 @@ export function Step1Property() {
         </div>
       </Field>
 
-      <div className="grid gap-8 sm:grid-cols-2">
-        <Field label="Number of rooms">
-          <NumberStepper
-            value={data.rooms}
-            min={1}
-            max={50}
-            onChange={(rooms) => setData({ rooms })}
-          />
-        </Field>
+      <Field
+        label="How many rooms of each type?"
+        hint={`We'll total these up (currently ${totalRooms(data.rooms)} room${totalRooms(data.rooms) === 1 ? "" : "s"}).`}
+      >
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {ROOM_TYPES.map((rt) => (
+            <div
+              key={rt.id}
+              className="flex items-center justify-between gap-3 rounded-card border border-line bg-elevated p-4"
+            >
+              <span className="flex min-w-0 items-center gap-2.5">
+                <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-btn bg-surface text-energy">
+                  <Icon name={rt.icon} size={18} />
+                </span>
+                <span className="truncate text-sm font-medium text-ink">
+                  {rt.label}
+                </span>
+              </span>
+              <NumberStepper
+                value={data.rooms[rt.id as keyof RoomCounts]}
+                min={0}
+                max={30}
+                onChange={(v) => setRoom(rt.id as keyof RoomCounts, v)}
+              />
+            </div>
+          ))}
+        </div>
+      </Field>
 
-        <Field label="People living there">
+      <Field label="People living there">
+        <div className="sm:max-w-xs">
           <NumberStepper
             value={data.occupants}
             min={1}
             max={50}
             onChange={(occupants) => setData({ occupants })}
           />
-        </Field>
-      </div>
+        </div>
+      </Field>
 
       <Field
         label="Approximate floor area"

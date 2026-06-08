@@ -32,6 +32,10 @@ import {
   ShieldCheck,
   Leaf,
   TrendingUp,
+  BedDouble,
+  Bath,
+  Sofa,
+  DoorOpen,
   HelpCircle,
   type LucideIcon,
 } from "lucide-react";
@@ -74,6 +78,10 @@ const registry: Record<string, LucideIcon> = {
   ShieldCheck,
   Leaf,
   TrendingUp,
+  BedDouble,
+  Bath,
+  Sofa,
+  DoorOpen,
 };
 
 export function Icon({

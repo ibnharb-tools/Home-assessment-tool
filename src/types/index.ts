@@ -17,6 +17,16 @@ export type GridConnection = "grid" | "partial" | "offgrid";
 export type UsageFrequency = "rarely" | "sometimes" | "daily" | "constantly";
 export type LightingType = "led" | "incandescent" | "mixed";
 
+/** Breakdown of rooms by type. */
+export interface RoomCounts {
+  bedrooms: number;
+  bathrooms: number;
+  living: number;
+  kitchens: number;
+  garages: number;
+  other: number;
+}
+
 export interface ApplianceSelection {
   /** Appliance key (see APPLIANCES catalog). */
   id: string;
@@ -29,7 +39,7 @@ export interface QuestionnaireData {
 
   // Step 1 — Property basics
   propertyType?: PropertyType;
-  rooms: number;
+  rooms: RoomCounts;
   floorArea?: number;
   areaUnit: AreaUnit;
   occupants: number;

@@ -3,6 +3,7 @@ import type { Assessment, QuestionnaireData } from "@/types";
 import type { GeocodeResult } from "./geocode";
 import type { ClimateData } from "./climate";
 import { APPLIANCES } from "./questionnaire-options";
+import { totalRooms } from "./utils";
 
 /**
  * AI assessment engine.
@@ -64,7 +65,8 @@ PROPERTY & LOCATION
 - Address: ${geo.displayName}
 - Coordinates: ${geo.latitude.toFixed(4)}, ${geo.longitude.toFixed(4)}
 - Property type: ${data.propertyType ?? "unspecified"}
-- Rooms: ${data.rooms}; Occupants: ${data.occupants}
+- Rooms: ${data.rooms.bedrooms} bed, ${data.rooms.bathrooms} bath, ${data.rooms.living} living, ${data.rooms.kitchens} kitchen, ${data.rooms.garages} garage, ${data.rooms.other} other (${totalRooms(data.rooms)} total)
+- Occupants: ${data.occupants}
 - Floor area: ${data.floorArea ? `${data.floorArea} ${data.areaUnit === "sqft" ? "sq ft" : "sq m"}` : "unspecified"}
 - Ownership: ${data.ownership}
 - Grid connection: ${data.gridConnection ?? "unspecified"}
