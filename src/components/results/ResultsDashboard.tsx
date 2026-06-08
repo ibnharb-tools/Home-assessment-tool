@@ -2,18 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { AnimatePresence, motion } from "framer-motion";
-import {
-  Zap,
-  DollarSign,
-  Clock,
-  Leaf,
-  AlertTriangle,
-  X,
-  Plus,
-} from "lucide-react";
-import type { Assessment } from "@/types";
-import { Logo, ThemeToggle, StatCard, Button, Card } from "@/components/ui";
+import { motion } from "framer-motion";
+import { Zap, DollarSign, Clock, Leaf, AlertTriangle, Plus } from "lucide-react";
+import type { Assessment, QuestionnaireData } from "@/types";
+import { Logo, ThemeToggle, StatCard, Button } from "@/components/ui";
+import { AuthModal } from "@/components/auth/AuthModal";
 import { EnergyProfile } from "./EnergyProfile";
 import { Viability } from "./Viability";
 import { Recommendations } from "./Recommendations";
@@ -27,10 +20,16 @@ export function ResultsDashboard({
   assessment,
   photos,
   warning,
+  questionnaireData,
+  saved = false,
 }: {
   assessment: Assessment;
   photos: string[];
   warning: string | null;
+  /** Present for the live session (enables saving). Absent for a saved view. */
+  questionnaireData?: QuestionnaireData;
+  /** True when viewing an already-saved assessment (hides the Save CTA). */
+  saved?: boolean;
 }) {
   const [showSave, setShowSave] = useState(false);
   const [dismissed, setDismissed] = useState(false);
@@ -99,7 +98,7 @@ export function ResultsDashboard({
           <SavingsCharts assessment={assessment} />
           <FinancialBreakdown assessment={assessment} />
           <EnvironmentalImpact assessment={assessment} />
-          {!dismissed && (
+          {!saved && !dismissed && (
             <SaveCTA
               onCreateAccount={() => setShowSave(true)}
               onContinue={() => setDismissed(true)}
@@ -108,50 +107,15 @@ export function ResultsDashboard({
         </div>
       </div>
 
-      {/* Placeholder save modal — replaced by the real Supabase auth modal in Phase 6. */}
-      <AnimatePresence>
-        {showSave && (
-          <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <div
-              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-              onClick={() => setShowSave(false)}
-            />
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0, y: 12 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 12 }}
-              transition={{ type: "spring", stiffness: 300, damping: 26 }}
-              className="relative w-full max-w-md"
-            >
-              <Card padding="lg" variant="glass">
-                <button
-                  type="button"
-                  aria-label="Close"
-                  onClick={() => setShowSave(false)}
-                  className="absolute right-4 top-4 text-ink-faint hover:text-ink"
-                >
-                  <X size={18} />
-                </button>
-                <h2 className="font-display text-xl font-bold">
-                  Account creation
-                </h2>
-                <p className="mt-2 text-ink-soft">
-                  Email/password sign-up and saving (via Supabase) arrive in the
-                  next build phase. Your assessment is held in this session for now.
-                </p>
-                <Button className="mt-6" onClick={() => setShowSave(false)}>
-                  Got it
-                </Button>
-              </Card>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <AuthModal
+        open={showSave}
+        onClose={() => setShowSave(false)}
+        toSave={
+          questionnaireData
+            ? { data: questionnaireData, assessment }
+            : null
+        }
+      />
     </main>
   );
 }

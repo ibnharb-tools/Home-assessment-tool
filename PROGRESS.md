@@ -16,7 +16,7 @@ Last updated: 2026-06-07
 | 3 | Questionnaire state & flow | ✅ Done |
 | 4 | AI assessment engine (API route) | ✅ Done |
 | 5 | Results dashboard | ✅ Done |
-| 6 | Auth & saving (Supabase) | ⏳ Pending |
+| 6 | Auth & saving (Supabase) | ✅ Done |
 | 7 | Polish & handoff | ⏳ Pending |
 
 ---
@@ -214,6 +214,36 @@ in this sandbox for a pixel screenshot; visual polish best confirmed in a browse
 
 ---
 
+## Phase 6 — Auth & saving (Supabase) ✅
+
+**Done:**
+- `src/lib/supabase.ts` — browser client with `isSupabaseConfigured` flag and `getSupabase()`
+  that returns null when env vars are absent (app never crashes without keys).
+- `src/lib/assessments.ts` — `saveAssessment` / `listAssessments` / `getAssessment` against
+  the `assessments` table (photos stripped before persisting).
+- `src/lib/useUser.ts` — auth-state hook (`user`, `loading`, `configured`) via
+  `getSession` + `onAuthStateChange`.
+- `supabase/schema.sql` — `assessments` table (schema from spec §4.5) + index + RLS policy
+  (users manage only their own rows). User runs this once in the Supabase SQL editor.
+- `src/components/auth/AuthModal.tsx` — glass email/password modal with Sign up / Sign in
+  toggle, validation, loading state, save-on-auth flow, success state ("Your assessment is
+  saved. Welcome aboard."), email-confirmation state, and a graceful "not configured" state.
+  Clearly-commented **FUTURE** placeholder for Google/Apple OAuth (not built, per spec).
+- Wired the real `AuthModal` into `ResultsDashboard` (replaced the Phase 5 placeholder), passing
+  the live `questionnaireData` so the current assessment is saved on signup. The Save CTA is
+  hidden when viewing an already-saved assessment.
+- `/my-assessments` (auth-gated) — lists saved assessments (address/nickname, date, key stats),
+  links to each, with sign-out, empty state, and loading/error states.
+- `/results/[id]` (auth-gated) — fetches a saved assessment by id and renders the full
+  dashboard in `saved` mode. Not-found and sign-in-required states handled.
+
+**Verification:** `npm run build` ✓ (9 routes). Dev: `/my-assessments` and `/results/[id]`
+both HTTP 200 and show the graceful "not configured" notice (no Supabase keys in this sandbox),
+no runtime errors. Full auth/save round-trip needs the env vars + `schema.sql` applied — noted
+for the user to supply.
+
+---
+
 ## Design Skill — Hallmark (added mid-build)
 
 User ran `npx skills add nutlope/hallmark` (installed at `.agents/skills/hallmark/`,
@@ -249,8 +279,5 @@ restructured (per the decision); only token/honest-copy touch-ups were applied.
 
 ## Pending / Next
 
-- **Phase 6:** Supabase client + schema (`assessments` table), glass email/password auth
-  modal (replacing the placeholder), save flow + success state, `/my-assessments` list and
-  `/results/[id]` (auth-gated). Commented placeholder for FUTURE Google/Apple sign-in.
 - **Phase 7:** Polish, error/empty/loading states, accessibility, responsive edges, README,
   final `PROGRESS.md`, clean `npm run build`. (Good slot for the Hallmark polish pass.)

@@ -112,6 +112,7 @@ export default function ResultsPage() {
         assessment={assessment}
         photos={data.photos}
         warning={warning}
+        questionnaireData={data}
       />
     );
   }
