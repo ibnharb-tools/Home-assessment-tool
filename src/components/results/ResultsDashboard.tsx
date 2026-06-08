@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Zap, DollarSign, Clock, Leaf, AlertTriangle, Plus } from "lucide-react";
+import { Zap, DollarSign, Clock, Leaf, AlertTriangle, Plus, RotateCcw } from "lucide-react";
 import type { Assessment, QuestionnaireData } from "@/types";
 import { Logo, ThemeToggle, StatCard, Button } from "@/components/ui";
+import { recomputeFromSelection } from "@/lib/recompute";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { EnergyProfile } from "./EnergyProfile";
 import { Viability } from "./Viability";
@@ -34,9 +35,43 @@ export function ResultsDashboard({
   const [showSave, setShowSave] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
-  const annualProduction = assessment.recommendations
-    .filter((r) => r.recommended)
-    .reduce((s, r) => s + (r.estimatedAnnualProduction || 0), 0);
+  // Technologies the AI recommended — the default selection.
+  const recommendedTechs = useMemo(
+    () =>
+      assessment.recommendations.filter((r) => r.recommended).map((r) => r.technology),
+    [assessment]
+  );
+  const [selected, setSelected] = useState<Set<string>>(
+    () => new Set(recommendedTechs)
+  );
+
+  const toggleTech = (tech: string) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(tech)) next.delete(tech);
+      else next.add(tech);
+      return next;
+    });
+
+  // Recompute all totals for the current selection (the "what-if" engine).
+  const recomputed = useMemo(
+    () => recomputeFromSelection(assessment, selected),
+    [assessment, selected]
+  );
+
+  // Sections that depend on the selection read these overridden totals.
+  const effective: Assessment = useMemo(
+    () => ({
+      ...assessment,
+      financial: recomputed.financial,
+      environmental: recomputed.environmental,
+    }),
+    [assessment, recomputed]
+  );
+
+  const isDefaultSelection =
+    selected.size === recommendedTechs.length &&
+    recommendedTechs.every((t) => selected.has(t));
 
   const isMock = assessment.meta?.mock;
 
@@ -66,9 +101,9 @@ export function ResultsDashboard({
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
           <p className="text-ink-soft">{assessment.meta?.address}</p>
-          <h1 className="mt-1 font-display text-4xl font-extrabold tracking-tight md:text-5xl">
-            Your Clean Energy{" "}
-            <span className="text-gradient-energy">Assessment</span>
+          <h1 className="mt-1 font-display text-4xl font-extrabold leading-[1.05] tracking-[-0.02em] md:text-5xl">
+            Your clean energy{" "}
+            <span className="accent-underline">assessment</span>
           </h1>
 
           {(warning || isMock) && (
@@ -82,23 +117,43 @@ export function ResultsDashboard({
           )}
         </motion.div>
 
-        {/* Hero stats */}
+        {/* Hero stats — reflect the current technology selection. */}
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard label="Annual production" value={annualProduction} suffix=" kWh" icon={Zap} accent="energy" />
-          <StatCard label="Net cost after rebates" value={assessment.financial.netCost} prefix="$" icon={DollarSign} accent="solar" />
-          <StatCard label="Payback period" value={assessment.financial.paybackYears} decimals={1} suffix=" yrs" icon={Clock} accent="wind" />
-          <StatCard label="CO₂ avoided / yr" value={assessment.environmental.annualCo2AvoidedTonnes} decimals={1} suffix=" t" icon={Leaf} accent="savings" />
+          <StatCard label="Annual production" value={recomputed.annualProduction} suffix=" kWh" icon={Zap} accent="energy" />
+          <StatCard label="Net cost after rebates" value={effective.financial.netCost} prefix="$" icon={DollarSign} accent="solar" />
+          <StatCard label="Payback period" value={effective.financial.paybackYears} decimals={1} suffix=" yrs" icon={Clock} accent="wind" />
+          <StatCard label="CO₂ avoided / yr" value={effective.environmental.annualCo2AvoidedTonnes} decimals={1} suffix=" t" icon={Leaf} accent="savings" />
         </div>
+
+        {!isDefaultSelection && (
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <span className="text-sm text-ink-soft">
+              Showing a custom plan ({selected.size}{" "}
+              {selected.size === 1 ? "technology" : "technologies"}).
+            </span>
+            <button
+              type="button"
+              onClick={() => setSelected(new Set(recommendedTechs))}
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-energy hover:underline focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-energy"
+            >
+              <RotateCcw size={14} /> Reset to recommended
+            </button>
+          </div>
+        )}
 
         {/* Sections */}
         <div className="mt-16 space-y-16">
           <EnergyProfile assessment={assessment} />
           <Viability assessment={assessment} />
-          <Recommendations assessment={assessment} />
+          <Recommendations
+            assessment={assessment}
+            selected={selected}
+            onToggle={toggleTech}
+          />
           <PhotoInsights assessment={assessment} photos={photos} />
-          <SavingsCharts assessment={assessment} />
-          <FinancialBreakdown assessment={assessment} />
-          <EnvironmentalImpact assessment={assessment} />
+          <SavingsCharts assessment={effective} />
+          <FinancialBreakdown assessment={effective} />
+          <EnvironmentalImpact assessment={effective} />
           {!saved && !dismissed && (
             <SaveCTA
               onCreateAccount={() => setShowSave(true)}

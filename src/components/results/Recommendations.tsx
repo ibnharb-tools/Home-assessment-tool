@@ -1,6 +1,6 @@
 "use client";
 
-import { Sun, Wind, Thermometer, BatteryCharging, Check, X, type LucideIcon } from "lucide-react";
+import { Sun, Wind, Thermometer, BatteryCharging, Check, type LucideIcon } from "lucide-react";
 import type { Assessment, Recommendation } from "@/types";
 import { Card } from "@/components/ui";
 import { Reveal } from "@/components/Reveal";
@@ -13,8 +13,17 @@ const ICONS: Record<string, LucideIcon> = {
   "Battery Storage": BatteryCharging,
 };
 
-export function Recommendations({ assessment }: { assessment: Assessment }) {
-  // Recommended first, then not-recommended (dimmed).
+export function Recommendations({
+  assessment,
+  selected,
+  onToggle,
+}: {
+  assessment: Assessment;
+  /** Currently-included technologies (drives the dashboard's what-if totals). */
+  selected: ReadonlySet<string>;
+  onToggle: (technology: string) => void;
+}) {
+  // Recommended first, then the rest.
   const sorted = [...assessment.recommendations].sort(
     (a, b) => Number(b.recommended) - Number(a.recommended)
   );
@@ -22,15 +31,22 @@ export function Recommendations({ assessment }: { assessment: Assessment }) {
   return (
     <Reveal>
       <div>
-        <p className="caption text-energy">Recommendations</p>
-        <h2 className="mt-2 font-display text-2xl font-bold md:text-3xl">
+        <h2 className="font-display text-3xl font-bold leading-[1.1] tracking-tight md:text-4xl">
           Your renewable roadmap
         </h2>
+        <p className="mt-3 max-w-[60ch] text-ink-soft">
+          We&apos;ve pre-selected what makes sense for your property. Toggle any
+          technology to include or drop it — every figure below updates instantly.
+        </p>
 
         <div className="mt-8 grid gap-5 md:grid-cols-2">
           {sorted.map((rec, i) => (
-            <Reveal key={rec.technology} delay={(i % 2) * 0.1}>
-              <RecCard rec={rec} />
+            <Reveal key={rec.technology} delay={(i % 2) * 0.08}>
+              <RecCard
+                rec={rec}
+                active={selected.has(rec.technology)}
+                onToggle={() => onToggle(rec.technology)}
+              />
             </Reveal>
           ))}
         </div>
@@ -39,15 +55,22 @@ export function Recommendations({ assessment }: { assessment: Assessment }) {
   );
 }
 
-function RecCard({ rec }: { rec: Recommendation }) {
+function RecCard({
+  rec,
+  active,
+  onToggle,
+}: {
+  rec: Recommendation;
+  active: boolean;
+  onToggle: () => void;
+}) {
   const Icon = ICONS[rec.technology] ?? Sun;
   return (
     <Card
       padding="md"
-      glow={rec.recommended}
       className={cn(
-        "h-full transition-opacity",
-        !rec.recommended && "opacity-70"
+        "h-full transition-colors",
+        active ? "border-energy-dim" : "opacity-80"
       )}
     >
       <div className="flex items-start justify-between gap-3">
@@ -55,8 +78,8 @@ function RecCard({ rec }: { rec: Recommendation }) {
           <span
             className={cn(
               "inline-flex h-11 w-11 items-center justify-center rounded-btn",
-              rec.recommended
-                ? "bg-gradient-energy text-[var(--bg-deepest)]"
+              active
+                ? "bg-energy text-[var(--accent-ink)]"
                 : "bg-surface text-ink-faint"
             )}
           >
@@ -67,49 +90,63 @@ function RecCard({ rec }: { rec: Recommendation }) {
               {rec.technology}
             </h3>
             <p className="caption text-ink-faint">
-              {rec.confidence} confidence
+              {rec.recommended
+                ? `Recommended · ${rec.confidence} confidence`
+                : "Not recommended for your property"}
             </p>
           </div>
         </div>
-        <span
+
+        {/* include/exclude toggle */}
+        <button
+          type="button"
+          role="switch"
+          aria-checked={active}
+          aria-label={`${active ? "Exclude" : "Include"} ${rec.technology}`}
+          onClick={onToggle}
           className={cn(
-            "inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold",
-            rec.recommended
-              ? "bg-savings/15 text-savings"
-              : "bg-surface text-ink-faint"
+            "relative mt-1 inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors duration-150",
+            "focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-energy",
+            active ? "bg-energy" : "bg-surface"
           )}
         >
-          {rec.recommended ? <Check size={13} /> : <X size={13} />}
-          {rec.recommended ? "Recommended" : "Not now"}
-        </span>
+          <span
+            className={cn(
+              "inline-block h-5 w-5 transform rounded-full bg-elevated shadow-[var(--shadow-whisper)] transition-transform duration-150",
+              active ? "translate-x-5" : "translate-x-0.5"
+            )}
+          />
+        </button>
       </div>
 
-      {rec.recommended && (
-        <div className="mt-5 grid grid-cols-2 gap-4 border-y border-line py-4 sm:grid-cols-4">
-          <Metric label="System" value={rec.systemSize} />
-          <Metric label="Cost" value={formatCurrency(rec.estimatedCost)} />
-          <Metric
-            label="Production"
-            value={
-              rec.estimatedAnnualProduction
-                ? `${formatNumber(rec.estimatedAnnualProduction)} kWh`
-                : "—"
-            }
-          />
-          <Metric
-            label="Coverage"
-            value={rec.coveragePercentage ? `${rec.coveragePercentage}%` : "—"}
-          />
-        </div>
-      )}
+      <div className="mt-5 grid grid-cols-2 gap-4 border-y border-line py-4 sm:grid-cols-4">
+        <Metric label="System" value={rec.systemSize || "—"} />
+        <Metric label="Cost" value={formatCurrency(rec.estimatedCost)} />
+        <Metric
+          label="Production"
+          value={
+            rec.estimatedAnnualProduction
+              ? `${formatNumber(rec.estimatedAnnualProduction)} kWh`
+              : "—"
+          }
+        />
+        <Metric
+          label="Coverage"
+          value={rec.coveragePercentage ? `${rec.coveragePercentage}%` : "—"}
+        />
+      </div>
 
-      <p className={cn("text-sm text-ink-soft", rec.recommended ? "mt-4" : "mt-5")}>
-        {rec.explanation}
-      </p>
-      {rec.placement && rec.recommended && (
+      <p className="mt-4 text-sm text-ink-soft">{rec.explanation}</p>
+      {rec.placement && (
         <p className="mt-3 text-sm text-ink-faint">
           <span className="font-medium text-ink-soft">Placement: </span>
           {rec.placement}
+        </p>
+      )}
+
+      {active && (
+        <p className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-savings">
+          <Check size={14} /> Included in your plan
         </p>
       )}
     </Card>
