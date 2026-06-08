@@ -288,6 +288,40 @@ Chart rendering was also deferred to client mount (`ChartReady`) to remove the R
 
 ---
 
+## Post-MVP feature additions (user requests)
+
+1. **Hallmark de-slop redesign (emphasized).** Ran a Hallmark design audit against the actual
+   UI and removed the loudest "AI-generated" tells: gradient text → solid accent + drawn
+   underline; removed coloured glow, floating orbs, and grid drift (one static hero bloom +
+   whisper shadow remain); de-glassed cards to solid `bg-elevated` + hairline border (glass
+   reserved for the nav pill/modals); solid contrast-checked buttons with real focus rings and
+   no spring bounce; asymmetric left-aligned hero with a real sample-data panel + sparkline;
+   numbered HowItWorks rows and an editorial Capabilities list (broke both feature grids);
+   left-aligned section heads; statement footer. Hallmark stamp + new tokens in `globals.css`.
+2. **`/future`** — roadmap page listing the FUTURE features (real content from spec §5).
+3. **`/about`** — mission/vision + founder page. **Content is placeholder** (bracketed
+   `[…]`) — the user fills in real bio/mission/vision; layout/styling are done.
+4. **Address precision** — geocoding now accepts raw coordinates (exact) and uses
+   `addressdetails=1` for better postal-code resolution; resolved location is shown on results.
+   (For pinpoint accuracy, coordinates are the most reliable input.)
+5. **Clean slate** — starting an assessment from the landing entry `reset()`s the store, so
+   nothing carries over to the next person; saved assessments live per-account in Supabase. The
+   "New" buttons route through the landing entry.
+6. **Room breakdown** — Step 1 collects bedrooms / bathrooms / living / kitchens / garages /
+   other (with a running total), fed into the prompt and estimates.
+7. **Toggle technologies on results** — include/exclude switches on each recommendation;
+   `lib/recompute.ts` re-derives cost/rebates/savings/payback/CO₂ for the selection, and the
+   hero stats, savings charts, financial breakdown, and environmental impact update live, with a
+   "Reset to recommended" affordance.
+8. **Flexible address input** — one field accepts a street address, a postal/ZIP code, or
+   coordinates ("lat, lon").
+
+Verification: `npm run build` ✓ (11 routes), `npm run lint` ✓ (0 errors); landing + `/about` +
+`/future` + dashboard (with live toggles) render with no runtime errors. Visual polish best
+confirmed in a browser; About-page copy awaits the user's real content.
+
+---
+
 ## Build complete
 
 All 7 phases done, committed, and pushed to `claude/loving-mccarthy-xLyZ8`. The app builds and
