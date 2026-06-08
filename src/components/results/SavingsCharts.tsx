@@ -35,26 +35,32 @@ export function SavingsCharts({ assessment }: { assessment: Assessment }) {
   const [view, setView] = useState<View>("savings");
   const { financial, environmental } = assessment;
 
-  const data = useMemo(() => {
-    const annualSavings = financial.annualSavings || 0;
-    // Use the productive net cost implied by payback so the break-even on the
-    // chart matches the reported payback figure.
-    const netForBreakEven =
-      financial.paybackYears > 0
-        ? annualSavings * financial.paybackYears
-        : financial.netCost;
-    const annualCo2 = environmental.annualCo2AvoidedTonnes || 0;
-    return Array.from({ length: YEARS + 1 }, (_, year) => ({
-      year,
-      savings: Math.round(annualSavings * year - netForBreakEven),
-      emissions: Math.round(annualCo2 * year * 10) / 10,
-    }));
-  }, [financial, environmental]);
+  // Defensive numeric coercion — a malformed AI payload could omit a field.
+  const annualSavings = Number(financial.annualSavings) || 0;
+  const netCost = Number(financial.netCost) || 0;
+  const annualCo2 = Number(environmental.annualCo2AvoidedTonnes) || 0;
 
+  const data = useMemo(
+    () =>
+      // The curve starts at -netCost (matching the headline "Net cost after
+      // rebates" stat) and gains `annualSavings` per year.
+      Array.from({ length: YEARS + 1 }, (_, year) => ({
+        year,
+        savings: Math.round(annualSavings * year - netCost),
+        emissions: Math.round(annualCo2 * year * 10) / 10,
+      })),
+    [annualSavings, netCost, annualCo2]
+  );
+
+  // True zero-crossing of THIS curve, so the marker always sits on the line.
+  const crossing = annualSavings > 0 ? netCost / annualSavings : null;
   const breakEvenYear =
-    financial.paybackYears > 0 && financial.paybackYears <= YEARS
-      ? Math.round(financial.paybackYears * 10) / 10
+    crossing !== null && crossing > 0 && crossing <= YEARS
+      ? Math.round(crossing * 10) / 10
       : null;
+
+  const endSavings = data[YEARS].savings;
+  const endEmissions = data[YEARS].emissions;
 
   const isSavings = view === "savings";
   const accentVar = isSavings ? "var(--savings)" : "var(--wind)";
@@ -149,7 +155,7 @@ export function SavingsCharts({ assessment }: { assessment: Assessment }) {
               )}
               {isSavings && breakEvenYear && (
                 <ReferenceLine
-                  x={Math.round(breakEvenYear)}
+                  x={breakEvenYear}
                   stroke="var(--energy-primary)"
                   strokeDasharray="4 4"
                   label={{
@@ -162,7 +168,7 @@ export function SavingsCharts({ assessment }: { assessment: Assessment }) {
               )}
               {isSavings && breakEvenYear && (
                 <ReferenceDot
-                  x={Math.round(breakEvenYear)}
+                  x={breakEvenYear}
                   y={0}
                   r={5}
                   fill="var(--energy-primary)"
@@ -194,7 +200,7 @@ export function SavingsCharts({ assessment }: { assessment: Assessment }) {
           {isSavings ? (
             <>
               <Chip icon={<TrendingUp size={15} />} accent="text-savings">
-                {formatCurrency(financial.twentyFiveYearSavings)} net by year 25
+                {formatCurrency(endSavings)} net by year 25
               </Chip>
               {breakEvenYear && (
                 <Chip accent="text-energy">Break-even in {breakEvenYear} years</Chip>
@@ -202,7 +208,7 @@ export function SavingsCharts({ assessment }: { assessment: Assessment }) {
             </>
           ) : (
             <Chip icon={<Leaf size={15} />} accent="text-wind">
-              {environmental.twentyFiveYearCo2Tonnes} t CO₂ avoided by year 25
+              {endEmissions} t CO₂ avoided by year 25
             </Chip>
           )}
         </div>

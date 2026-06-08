@@ -32,6 +32,7 @@ export default function MyAssessmentsPage() {
     const supabase = getSupabase();
     if (!supabase) return;
     setFetching(true);
+    setError(null); // clear any stale error before refetching
     listAssessments(supabase)
       .then(setRows)
       .catch((e) => setError(e.message))

@@ -25,6 +25,8 @@ export default function SavedAssessmentPage() {
     const supabase = getSupabase();
     if (!supabase) return;
     setFetching(true);
+    setNotFound(false); // reset stale state when navigating between ids
+    setRow(null);
     getAssessment(supabase, id)
       .then((r) => {
         if (!r) setNotFound(true);

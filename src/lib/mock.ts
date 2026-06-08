@@ -195,10 +195,16 @@ export function buildMockAssessment(
   // ~ $0.16/kWh CAD blended rate.
   const RATE = 0.16;
   const solarRecommended = recommendations[0].recommended;
+  const windRecommended = recommendations[1].recommended;
   const geoRecommended = recommendations[2].recommended;
 
   const solarSavings = solarRecommended
     ? Math.min(estimatedAnnualKwh, solarAnnualProd) * RATE
+    : 0;
+  // Wind savings are the bill offset from its generation (kept in step with
+  // its cost so a wind recommendation doesn't inflate payback).
+  const windSavings = windRecommended
+    ? recommendations[1].estimatedAnnualProduction * RATE
     : 0;
   // Ground-source heat pump displaces most of the heating load. Floor reflects
   // that an electric-heat home's heating bill is large even when our
@@ -207,15 +213,15 @@ export function buildMockAssessment(
   const geoSavings = geoRecommended
     ? Math.max(heatingKwh * 0.6 * RATE, 1200)
     : 0;
-  const annualSavings = Math.round(solarSavings + geoSavings);
+  const annualSavings = Math.round(solarSavings + windSavings + geoSavings);
 
   // Payback is measured on the energy-generating investment only. Battery
   // storage is a resilience purchase (no direct energy savings), so its cost
   // is part of the honest total/net cost but excluded from payback math.
   const productiveCost =
     (solarRecommended ? recommendations[0].estimatedCost : 0) +
-    (geoRecommended ? recommendations[2].estimatedCost : 0) +
-    (recommendations[1].recommended ? recommendations[1].estimatedCost : 0);
+    (windRecommended ? recommendations[1].estimatedCost : 0) +
+    (geoRecommended ? recommendations[2].estimatedCost : 0);
   const productiveNet = Math.max(0, productiveCost - estimatedRebates);
   const paybackYears =
     annualSavings > 0
@@ -224,9 +230,14 @@ export function buildMockAssessment(
   const twentyFiveYearSavings = Math.round(annualSavings * 25 - productiveNet);
 
   // ---- Environmental ----
-  // ~0.13 t CO2 per MWh (varies by grid); use solar production offset.
+  // ~0.13 t CO2 per MWh (varies by grid). Base it on the production of the
+  // RECOMMENDED clean-generation systems only — never a system we didn't
+  // recommend (e.g. solar on an apartment).
+  const recommendedProductionKwh = recommendations
+    .filter((r) => r.recommended)
+    .reduce((s, r) => s + (r.estimatedAnnualProduction || 0), 0);
   const annualCo2AvoidedTonnes =
-    Math.round((solarAnnualProd / 1000) * 0.13 * 100) / 100;
+    Math.round((recommendedProductionKwh / 1000) * 0.13 * 100) / 100;
   const environmental = {
     annualCo2AvoidedTonnes,
     treesEquivalent: Math.round(annualCo2AvoidedTonnes * 16.5),

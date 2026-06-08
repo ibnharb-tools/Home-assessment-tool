@@ -141,6 +141,16 @@ export const useQuestionnaireStore = create<QuestionnaireState>()(
     }),
     {
       name: "everstead-questionnaire",
+      // Persist only the durable questionnaire inputs + step position. The
+      // transient assessment lifecycle (`status`/`assessment`/`error`) is
+      // intentionally NOT persisted: otherwise a reload mid-request would
+      // restore status='loading' and the results page — which only fetches when
+      // status is 'idle' — would hang on the loader forever. With these left
+      // out, a reload resets to 'idle' and re-runs the assessment from `data`.
+      partialize: (state) => ({
+        data: state.data,
+        currentStep: state.currentStep,
+      }),
       // sessionStorage: the assessment is ephemeral until the user creates an
       // account to save it (per spec). Survives the landing -> questionnaire ->
       // results flow within a tab.
