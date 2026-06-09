@@ -56,3 +56,56 @@ NREL_API_KEY=               # optional — enables the NREL PVWatts solar cross-
 - Nominatim usage policy: https://operations.osmfoundation.org/policies/nominatim/
 - Global Wind Atlas: https://globalwindatlas.info/  ·  World Bank Data360: https://data360.worldbank.org/
 - Original product spec: [`everstead_build_spec.md`](./everstead_build_spec.md)
+
+## Reference library (`docs/`)
+
+Engineering and economics references that ground the assessment methodology.
+Items marked **[in code]** directly inform current model assumptions; the rest
+support future expansion (hydro, detailed storage) and validation.
+
+**Solar PV modelling**
+- *RE509 — Applied Photovoltaics* · *Solar Energy Engineering: Processes and Systems* ·
+  *Renewable and Efficient Electric Power Systems*
+- *SAM Photovoltaic Model Technical Reference* · *PVWatts Version 5 Manual* **[in code]**
+  (informs the PVWatts/PVGIS yield path in `src/lib/resources.ts`)
+- *pvlib python — project update (2023)* · *pvlib iotools (solar irradiance access)* ·
+  *Open-source photovoltaic model pipeline validation*
+
+**PV performance loss & degradation** (informs the 25-year projection + system-loss %)
+- *Best practices for photovoltaic performance loss rate calculations* **[in code]**
+- *Estimating the PLR of PV Systems Using Time Series Change-Point Analysis*
+- *Solar RRL 2023 — Deceglie: Performance Loss Rate in PV Systems*
+- *Solar RRL 2023 — Theristis: How Climate & Data Quality Impact PLR Estimations*
+- *The economic value of PV performance-loss mitigation in electricity spot markets*
+
+**Wind** (informs the shear-extrapolation + Rayleigh capacity-factor model in `resources.ts`) **[in code]**
+- *Wind Energy Handbook* · *Aerodynamics of Wind Turbines* ·
+  *Fluid Mechanics and Thermodynamics of Turbomachinery*
+
+**Geothermal / heat pumps** (informs geothermal viability + heating-offset assumptions)
+- *Design of Ground-Source Heat Pump Systems* · *Ground Source Heat Pump — Residential & Light Commercial*
+- *CSA F280 — HVAC Requirements for Part 9 Buildings* · *Intro to thermal/geo*
+
+**Solar thermal**
+- *Solar Thermal Energy Systems* · *IEC Solar white paper (CS10111)*
+
+**Storage / batteries** (informs battery cost + resilience modelling)
+- *Cost Projections for Utility-Scale Battery Storage (2023 Update)* **[in code-adjacent]**
+- *DOE/EPRI Electricity Storage Handbook* · *Handbook of Batteries* ·
+  *Battery Management Systems* · *Energy Storage: Fundamentals, Materials & Applications*
+
+**Economics / cost basis** (informs cost, rebate, payback & LCOE assumptions)
+- *Lazard LCOE+ (June 2025)* **[in code]** · *A Manual for the Economic Evaluation of Energy Efficiency*
+- *OGA IRRs attachment*
+
+**Canadian residential standards** (informs Canadian context + rebate framing)
+- *Canadian Home Builders' Association Net Zero Home Labelling — v1.3 Technical Procedures* ·
+  *Final NG Mechanicals Decision Guide*
+
+**Hydropower** (FUTURE — supports a planned small-hydro module)
+- *Hydropower Engineering Handbook* · *Layman's Guide to Developing a Small Hydro Site* ·
+  *Merged Guide — Develop a Small Hydropower Plant*
+
+> A few uploads (e.g. `Sach_Tieng_Anh.pdf`, various `preview…`/`dokumen.pub…` excerpts) appear to
+> be previews or unrelated and aren't tied to the methodology — kept for completeness.
+
