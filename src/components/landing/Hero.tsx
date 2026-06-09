@@ -44,7 +44,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-6 max-w-[15ch] text-balance font-display font-bold leading-[1.02] tracking-[-0.03em] text-[clamp(3.25rem,5.5vw+1rem,5.75rem)]"
+            className="mt-6 text-balance font-display font-bold leading-[1.02] tracking-[-0.03em] text-[clamp(3.25rem,5.5vw+1rem,5.75rem)]"
           >
             Let&apos;s energize your{" "}
             <span className="accent-underline">home</span>.
@@ -72,16 +72,9 @@ export function Hero() {
           </motion.div>
         </div>
 
-        {/* Right: the living home — frameless, edges dissolved, parallax depth.
-            mask-image fades all four sides so no rectangular boundary is visible. */}
+        {/* Right: the living home — edges dissolved via SVG-level mask, parallax depth. */}
         <motion.div
-          style={{
-            y: illustrationY,
-            maskImage:
-              "radial-gradient(ellipse 92% 88% at 58% 46%, black 48%, transparent 90%)",
-            WebkitMaskImage:
-              "radial-gradient(ellipse 92% 88% at 58% 46%, black 48%, transparent 90%)",
-          }}
+          style={{ y: illustrationY }}
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}

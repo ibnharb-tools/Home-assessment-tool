@@ -22,7 +22,7 @@ const data = Array.from({ length: 26 }, (_, year) => ({
 export function VisualPreview() {
   return (
     <section className="relative mx-auto max-w-[1200px] px-6 py-24 md:px-8 md:py-28">
-      <Reveal className="max-w-[28ch]">
+      <Reveal>
         <h2 className="font-display text-4xl font-bold leading-[1.1] tracking-tight md:text-5xl">
           Your energy, in one clear dashboard
         </h2>

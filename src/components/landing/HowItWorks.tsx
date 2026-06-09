@@ -37,7 +37,7 @@ export function HowItWorks() {
       id="how-it-works"
       className="mx-auto max-w-[1200px] px-6 py-16 md:px-8 md:py-20"
     >
-      <Reveal className="max-w-[22ch]">
+      <Reveal>
         <h2 className="font-display text-5xl font-bold leading-[1.08] tracking-tight md:text-6xl">
           From questions to clean energy
         </h2>

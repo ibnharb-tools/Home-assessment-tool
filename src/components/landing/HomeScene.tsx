@@ -76,6 +76,10 @@ export function HomeScene({ className }: { className?: string }) {
     <svg
       viewBox="0 0 640 480"
       className={cn("h-auto w-full select-none overflow-visible", className)}
+      style={{
+        maskImage: "radial-gradient(ellipse 86% 80% at 54% 52%, black 38%, transparent 76%)",
+        WebkitMaskImage: "radial-gradient(ellipse 86% 80% at 54% 52%, black 38%, transparent 76%)",
+      }}
       role="img"
       aria-label="An illustrated home with solar panels, wind turbines and a geothermal loop"
     >

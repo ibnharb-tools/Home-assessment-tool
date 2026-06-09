@@ -56,38 +56,34 @@ export function Capabilities() {
       id="capabilities"
       className="mx-auto max-w-[1200px] px-6 py-24 md:px-8 md:py-28"
     >
-      <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
-        <Reveal className="lg:col-span-4">
-          <h2 className="font-display text-4xl font-bold leading-[1.1] tracking-tight md:text-5xl">
-            Everything you need to go renewable
-          </h2>
-          <p className="mt-4 max-w-[40ch] text-ink-soft">
-            One assessment, every angle — from the technologies worth installing
-            to the dollars and emissions they move.
-          </p>
-        </Reveal>
+      <Reveal>
+        <h2 className="font-display text-4xl font-bold leading-[1.1] tracking-tight md:text-5xl">
+          Everything you need to go renewable
+        </h2>
+        <p className="mt-4 max-w-[52ch] text-ink-soft">
+          One assessment, every angle — from the technologies worth installing
+          to the dollars and emissions they move.
+        </p>
+      </Reveal>
 
-        <div className="lg:col-span-8">
-          <div className="grid sm:grid-cols-2">
-            {features.map((f, i) => (
-              <Reveal key={f.title} delay={(i % 2) * 0.08}>
-                <div className="flex gap-4 border-t border-line py-6 pr-2">
-                  <f.icon
-                    size={22}
-                    className="mt-0.5 shrink-0 text-energy"
-                    strokeWidth={1.75}
-                  />
-                  <div>
-                    <h3 className="font-display text-lg font-semibold">
-                      {f.title}
-                    </h3>
-                    <p className="mt-1.5 text-sm text-ink-soft">{f.desc}</p>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
+      <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3">
+        {features.map((f, i) => (
+          <Reveal key={f.title} delay={(i % 3) * 0.06}>
+            <div className="flex gap-4 border-t border-line py-6 pr-8">
+              <f.icon
+                size={22}
+                className="mt-0.5 shrink-0 text-energy"
+                strokeWidth={1.75}
+              />
+              <div>
+                <h3 className="font-display text-lg font-semibold">
+                  {f.title}
+                </h3>
+                <p className="mt-1.5 text-sm text-ink-soft">{f.desc}</p>
+              </div>
+            </div>
+          </Reveal>
+        ))}
       </div>
     </section>
   );

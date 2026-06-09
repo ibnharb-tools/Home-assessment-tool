@@ -28,7 +28,7 @@ export function ThemeProvider({
       {...props}
     >
       <MotionConfig reducedMotion="user">
-        <ReactLenis root options={{ lerp: 0.065, smoothWheel: true }}>
+        <ReactLenis root options={{ lerp: 0.1, smoothWheel: true }}>
           {children}
         </ReactLenis>
       </MotionConfig>
