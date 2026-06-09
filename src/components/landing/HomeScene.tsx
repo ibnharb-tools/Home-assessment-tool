@@ -1,5 +1,6 @@
 "use client";
 
+import { useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 /**
@@ -23,30 +24,36 @@ function Turbine({
   scale?: number;
   fast?: boolean;
 }) {
-  // Airfoil blade: tapered, slight curve.
-  const blade = "M0,-5 C7,-26 7,-58 2,-82 C-1,-58 -4,-30 0,-5 Z";
+  const reduceMotion = useReducedMotion();
+  // Airfoil blade: tapered, slight curve. Starts at y=0 (hub center).
+  const blade = "M0,0 C7,-22 7,-54 2,-78 C-1,-54 -4,-22 0,0 Z";
   const towerH = baseY - hubY;
+  const dur = `${fast ? 4.5 : 7}s`;
   return (
     <g transform={`translate(${x} ${hubY}) scale(${scale})`}>
+      {/* mast: continuous tapered pole from ground up to hub */}
+      <path d={`M-3,0 L3,0 L6,${towerH} L-6,${towerH} Z`} fill="url(#towerGrad)" />
       {/* base shadow */}
-      <ellipse cx={0} cy={towerH} rx={16} ry={4} fill="#000" opacity={0.08} />
-      {/* tapered tower */}
-      <path
-        d={`M-3,0 L3,0 L6,${towerH} L-6,${towerH} Z`}
-        fill="url(#towerGrad)"
-      />
-      <g className={cn("turbine-spin", fast && "turbine-spin-fast")}>
+      <ellipse cx={0} cy={towerH} rx={14} ry={3.5} fill="#000" opacity={0.08} />
+      {/* rotor — SVG animateTransform rotates around (0,0) = hub center exactly */}
+      <g>
         {[0, 120, 240].map((deg) => (
-          <path
-            key={deg}
-            d={blade}
-            transform={`rotate(${deg})`}
-            fill="url(#bladeGrad)"
-          />
+          <path key={deg} d={blade} transform={`rotate(${deg})`} fill="url(#bladeGrad)" />
         ))}
+        {!reduceMotion && (
+          <animateTransform
+            attributeName="transform"
+            type="rotate"
+            from="0 0 0"
+            to="360 0 0"
+            dur={dur}
+            repeatCount="indefinite"
+          />
+        )}
       </g>
+      {/* hub cap */}
       <circle r={5.5} fill="var(--solar)" />
-      <circle r={2.2} fill="#fff" opacity={0.6} />
+      <circle r={2.2} fill="#fff" opacity={0.65} />
     </g>
   );
 }

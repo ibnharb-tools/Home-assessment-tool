@@ -8,35 +8,32 @@ import { HomeScene } from "./HomeScene";
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
 
-  // Track how far the hero section has scrolled out of view (0 → 1).
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"],
   });
 
-  // Illustration lags behind the scroll — appears to float on a deeper layer.
-  // Positive y = element moves down relative to container = slower scroll = depth.
+  // Illustration lags behind scroll — floats on a deeper layer.
   const illustrationY = useTransform(scrollYProgress, [0, 1], [0, 55]);
 
   return (
     <section
       ref={sectionRef}
       aria-labelledby="hero-heading"
-      className="relative overflow-hidden px-6 pt-32 pb-20 md:pt-36 md:pb-28"
+      className="relative overflow-hidden px-6 pt-20 pb-12 md:pt-24 md:pb-16"
     >
-      {/* one static warm bloom + faint grid — no orbs */}
       <div className="ambient-glow pointer-events-none absolute inset-0 -z-10" />
       <div className="grid-bg pointer-events-none absolute inset-0 -z-10" />
       <div className="noise-overlay pointer-events-none absolute inset-0 -z-10" />
 
       <div className="mx-auto grid max-w-[1200px] items-center gap-10 lg:grid-cols-12 lg:gap-4">
-        {/* Left: editorial */}
-        <div className="lg:col-span-5">
+        {/* Left: editorial — sits above illustration in stacking order */}
+        <div className="relative z-10 lg:col-span-5">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="caption inline-flex items-center gap-2 rounded-full border border-line bg-elevated px-3 py-1.5 text-ink-soft"
+            className="caption inline-flex items-center gap-2 rounded-full border border-line bg-elevated px-3 py-1.5 text-energy"
           >
             <span className="pulse-dot inline-block h-2 w-2 rounded-full bg-energy" />
             AI-powered energy intelligence
@@ -47,7 +44,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-6 max-w-[15ch] text-balance font-display font-semibold leading-[1.02] tracking-[-0.02em] text-[clamp(2.75rem,5vw+1rem,4.75rem)]"
+            className="mt-6 max-w-[15ch] text-balance font-display font-bold leading-[1.02] tracking-[-0.03em] text-[clamp(3.25rem,5.5vw+1rem,5.75rem)]"
           >
             Let&apos;s energize your{" "}
             <span className="accent-underline">home</span>.
@@ -57,7 +54,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.16, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-6 max-w-[50ch] text-lg text-ink-soft md:text-xl"
+            className="mt-6 max-w-[48ch] text-xl text-ink-soft"
           >
             Enter your address and answer a few questions. In minutes,
             you&apos;ll have a detailed assessment: which technologies suit
@@ -75,9 +72,16 @@ export function Hero() {
           </motion.div>
         </div>
 
-        {/* Right: the living home — floats on a deeper parallax layer */}
+        {/* Right: the living home — frameless, edges dissolved, parallax depth.
+            mask-image fades all four sides so no rectangular boundary is visible. */}
         <motion.div
-          style={{ y: illustrationY }}
+          style={{
+            y: illustrationY,
+            maskImage:
+              "radial-gradient(ellipse 92% 88% at 58% 46%, black 48%, transparent 90%)",
+            WebkitMaskImage:
+              "radial-gradient(ellipse 92% 88% at 58% 46%, black 48%, transparent 90%)",
+          }}
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}

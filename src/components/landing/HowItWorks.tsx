@@ -35,18 +35,18 @@ export function HowItWorks() {
   return (
     <section
       id="how-it-works"
-      className="mx-auto max-w-[1200px] px-6 py-24 md:px-8 md:py-28"
+      className="mx-auto max-w-[1200px] px-6 py-16 md:px-8 md:py-20"
     >
-      <Reveal className="max-w-[24ch]">
-        <h2 className="font-display text-4xl font-bold leading-[1.1] tracking-tight md:text-5xl">
+      <Reveal className="max-w-[22ch]">
+        <h2 className="font-display text-5xl font-bold leading-[1.08] tracking-tight md:text-6xl">
           From questions to clean energy
         </h2>
       </Reveal>
 
-      <div className="mt-14 flex flex-col">
+      <div className="mt-10 flex flex-col">
         {steps.map((step, i) => (
           <Reveal key={step.num} delay={i * 0.08}>
-            <div className="grid grid-cols-[auto_1fr] gap-5 border-t border-line py-8 sm:grid-cols-[6rem_auto_1fr] sm:gap-8">
+            <div className="grid grid-cols-[auto_1fr] gap-5 border-t border-line py-7 sm:grid-cols-[6rem_auto_1fr] sm:gap-8">
               <span className="font-mono text-3xl font-bold text-energy sm:text-4xl">
                 {step.num}
               </span>
