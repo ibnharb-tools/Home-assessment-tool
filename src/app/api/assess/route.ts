@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { Assessment, QuestionnaireData } from "@/types";
 import { geocodeAddress } from "@/lib/geocode";
 import { getClimateData } from "@/lib/climate";
+import { getResources, type ResourceBundle } from "@/lib/resources";
 import { buildAssessment, hasAnthropicKey } from "@/lib/anthropic";
 import { buildMockAssessment } from "@/lib/mock";
 
@@ -36,17 +37,31 @@ export async function POST(req: Request) {
     displayName: data.address,
   };
 
-  // 2) Fetch climate data when we have coordinates (resilient — degrades to
-  //    estimates if the climate APIs are unavailable).
-  const climate = located
-    ? await getClimateData(resolved.latitude, resolved.longitude)
-    : {
-        solarIrradiance: null,
-        windSpeed10m: null,
-        windSpeed50m: null,
-        avgTempC: null,
-        source: "none" as const,
-      };
+  // 2) Fetch climate (NASA POWER) AND the higher-fidelity resource models
+  //    (PVGIS PV yield, optional NREL PVWatts, modelled wind AEP) in parallel.
+  //    All resilient — any failure degrades to the climate/heuristic path.
+  const emptyResources: ResourceBundle = {
+    solarPV: null,
+    solarPVWatts: null,
+    wind: null,
+  };
+  const [climate, resources] = located
+    ? await Promise.all([
+        getClimateData(resolved.latitude, resolved.longitude),
+        getResources(resolved.latitude, resolved.longitude).catch(
+          () => emptyResources
+        ),
+      ])
+    : [
+        {
+          solarIrradiance: null,
+          windSpeed10m: null,
+          windSpeed50m: null,
+          avgTempC: null,
+          source: "none" as const,
+        },
+        emptyResources,
+      ];
 
   const generatedAt = new Date().toISOString();
   const locationWarning = located
@@ -63,7 +78,7 @@ export async function POST(req: Request) {
   // 3) Build the assessment — live AI when a key is present, otherwise mock.
   if (hasAnthropicKey()) {
     try {
-      const assessment = await buildAssessment(data, resolved, climate);
+      const assessment = await buildAssessment(data, resolved, climate, resources);
       const withMeta: Assessment = {
         ...assessment,
         meta: { ...meta, mock: false },
@@ -72,7 +87,7 @@ export async function POST(req: Request) {
     } catch (err) {
       // Fall back to the mock so the demo never hard-fails; surface a note.
       console.error("AI assessment failed, falling back to mock:", err);
-      const mock = buildMockAssessment(data, resolved, climate);
+      const mock = buildMockAssessment(data, resolved, climate, resources);
       return NextResponse.json({
         assessment: { ...mock, meta: { ...meta, mock: true } },
         warning:
@@ -83,7 +98,7 @@ export async function POST(req: Request) {
   }
 
   // No key configured — deterministic mock.
-  const mock = buildMockAssessment(data, resolved, climate);
+  const mock = buildMockAssessment(data, resolved, climate, resources);
   return NextResponse.json({
     assessment: { ...mock, meta: { ...meta, mock: true } },
     warning: locationWarning,

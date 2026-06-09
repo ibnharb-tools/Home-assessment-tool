@@ -5,6 +5,7 @@ import type {
 } from "@/types";
 import type { GeocodeResult } from "./geocode";
 import type { ClimateData } from "./climate";
+import type { ResourceBundle } from "./resources";
 
 /**
  * Deterministic mock assessment used when ANTHROPIC_API_KEY is absent (so the
@@ -60,7 +61,8 @@ function windRating(v: number | null): Rating {
 export function buildMockAssessment(
   data: QuestionnaireData,
   geo: GeocodeResult,
-  climate: ClimateData
+  climate: ClimateData,
+  resources?: ResourceBundle
 ): Assessment {
   // ---- Energy estimate ----
   let applianceDaily = 0;
@@ -113,13 +115,28 @@ export function buildMockAssessment(
   const solarSizeKw =
     Math.round(Math.max(3, estimatedDailyKwh / 4) * 10) / 10;
   const solarCost = Math.round(solarSizeKw * 2700);
-  const solarAnnualProd = Math.round(
-    solarSizeKw * (solar ?? 3.8) * 365 * 0.8
-  );
-  const solarCoverage = Math.min(
-    95,
-    Math.round((solarAnnualProd / estimatedAnnualKwh) * 100)
-  );
+  // Prefer a modelled PV yield (PVGIS / PVWatts) when available — far more
+  // accurate than the irradiance heuristic.
+  const pvYield =
+    resources?.solarPV?.specificYield ??
+    resources?.solarPVWatts?.specificYield ??
+    null;
+  const solarAnnualProd = pvYield
+    ? Math.round(solarSizeKw * pvYield)
+    : Math.round(solarSizeKw * (solar ?? 3.8) * 365 * 0.8);
+  const solarCoverage =
+    estimatedAnnualKwh > 0
+      ? Math.min(95, Math.round((solarAnnualProd / estimatedAnnualKwh) * 100))
+      : 0;
+
+  // Wind: defer to the modelled site viability/AEP when available.
+  const windRes = resources?.wind ?? null;
+  const windRecommended = windRes
+    ? windRes.viable && !apartment
+    : wRating === "Excellent" && !apartment;
+  const windProd = windRecommended
+    ? windRes?.annualKWh ?? Math.round((wind ?? 6) * 1200)
+    : 0;
 
   const recommendations = [
     {
@@ -140,17 +157,21 @@ export function buildMockAssessment(
     },
     {
       technology: "Wind",
-      recommended: wRating === "Excellent" && !apartment,
-      confidence: (wRating === "Excellent" ? "Medium" : "Low") as
+      recommended: windRecommended,
+      confidence: (windRecommended ? "Medium" : "Low") as
         | "High"
         | "Medium"
         | "Low",
-      systemSize: wRating === "Excellent" ? "5 kW turbine" : "n/a",
-      estimatedCost: wRating === "Excellent" ? 22000 : 0,
-      estimatedAnnualProduction:
-        wRating === "Excellent" ? Math.round((wind ?? 6) * 1200) : 0,
-      coveragePercentage: wRating === "Excellent" ? 25 : 0,
-      explanation: `Average wind speed of ${wind ? wind.toFixed(1) : "n/a"} m/s at 50m is rated ${wRating} for small wind. Small wind is only cost-effective with strong, consistent wind and open land.`,
+      systemSize: windRecommended ? "5 kW turbine" : "n/a",
+      estimatedCost: windRecommended ? 22000 : 0,
+      estimatedAnnualProduction: windProd,
+      coveragePercentage:
+        windRecommended && estimatedAnnualKwh > 0
+          ? Math.min(60, Math.round((windProd / estimatedAnnualKwh) * 100))
+          : 0,
+      explanation: windRes
+        ? `Modelled hub-height wind of ${windRes.windSpeedHub} m/s gives a ${(windRes.capacityFactor * 100).toFixed(0)}% capacity factor (~${windRes.annualKWh.toLocaleString()} kWh/yr from a 5 kW turbine). ${windRes.viable ? "Viable" : "Below the ~5 m/s threshold where small wind pays off"}.`
+        : `Average wind speed of ${wind ? wind.toFixed(1) : "n/a"} m/s at 50m is rated ${wRating} for small wind. Small wind is only cost-effective with strong, consistent wind and open land.`,
       placement: "Open area away from buildings and obstructions.",
     },
     {
@@ -195,7 +216,7 @@ export function buildMockAssessment(
   // ~ $0.16/kWh CAD blended rate.
   const RATE = 0.16;
   const solarRecommended = recommendations[0].recommended;
-  const windRecommended = recommendations[1].recommended;
+  // windRecommended is declared earlier (drives the Wind recommendation).
   const geoRecommended = recommendations[2].recommended;
 
   const solarSavings = solarRecommended

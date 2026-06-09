@@ -4,6 +4,7 @@ import type { GeocodeResult } from "./geocode";
 import type { ClimateData } from "./climate";
 import { APPLIANCES } from "./questionnaire-options";
 import { totalRooms } from "./utils";
+import type { ResourceBundle } from "./resources";
 
 /**
  * AI assessment engine.
@@ -39,10 +40,35 @@ function describeAppliances(data: QuestionnaireData): string {
     .join("\n");
 }
 
+/** Higher-fidelity resource-model section (PVGIS / PVWatts / modelled wind). */
+function buildResourceSection(resources?: ResourceBundle): string {
+  if (!resources) return "";
+  const { solarPV, solarPVWatts, wind } = resources;
+  const lines: string[] = [];
+  if (solarPV?.specificYield) {
+    lines.push(
+      `- PVGIS (${solarPV.database}): specific yield ${solarPV.specificYield.toFixed(0)} kWh/kWp/yr; optimal tilt ${solarPV.optimalTilt ?? "?"}°, azimuth ${solarPV.optimalAzimuth ?? "?"}°. Size solar from this yield.`
+    );
+  }
+  if (solarPVWatts?.specificYield) {
+    lines.push(
+      `- NREL PVWatts cross-check: ${solarPVWatts.specificYield.toFixed(0)} kWh/kWp/yr.`
+    );
+  }
+  if (wind) {
+    lines.push(
+      `- Modelled wind: ${wind.windSpeedHub} m/s at ${wind.hubHeightM}m hub (shear α=${wind.shearExponent}); capacity factor ${(wind.capacityFactor * 100).toFixed(0)}%; estimated ${wind.annualKWh} kWh/yr from a ${5} kW turbine; site ${wind.viable ? "VIABLE" : "NOT viable"} for small wind. Defer to this viability call.`
+    );
+  }
+  if (lines.length === 0) return "";
+  return `\n\nRESOURCE MODELING (use these engineering estimates for sizing/production over the rough thresholds above)\n${lines.join("\n")}`;
+}
+
 function buildPrompt(
   data: QuestionnaireData,
   geo: GeocodeResult,
-  climate: ClimateData
+  climate: ClimateData,
+  resources?: ResourceBundle
 ): string {
   const solar =
     climate.solarIrradiance !== null
@@ -85,7 +111,7 @@ LOCATION CLIMATE DATA (source: ${climate.source})
 - Annual avg solar irradiance (GHI): ${solar}
 - Annual avg wind speed @ 50m: ${wind50}
 - Annual avg wind speed @ 10m: ${wind10}
-- Annual avg temperature: ${temp}
+- Annual avg temperature: ${temp}${buildResourceSection(resources)}
 
 RATING THRESHOLDS — base ratings strictly on the climate values above:
 - Solar (kWh/m²/day): >5.0 Excellent; 4.0–5.0 Good; 3.0–4.0 Moderate; <3.0 Poor.
@@ -187,11 +213,12 @@ function extractJson(text: string): unknown {
 export async function buildAssessment(
   data: QuestionnaireData,
   geo: GeocodeResult,
-  climate: ClimateData
+  climate: ClimateData,
+  resources?: ResourceBundle
 ): Promise<Assessment> {
   const client = new Anthropic(); // reads ANTHROPIC_API_KEY from env
 
-  const promptText = buildPrompt(data, geo, climate);
+  const promptText = buildPrompt(data, geo, climate, resources);
   const imageBlocks = buildImageBlocks(data.photos);
 
   const content: Anthropic.ContentBlockParam[] = [

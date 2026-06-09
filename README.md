@@ -22,7 +22,10 @@ rebate estimates, and beautiful 25-year savings & emissions projections.
 - **Zustand** (questionnaire state, persisted to `sessionStorage`)
 - **Anthropic SDK** (`claude-sonnet-4-6`) for the AI assessment engine
 - **Supabase** for email auth + saved assessments
-- Free external APIs (no key): **Nominatim** (geocoding), **NASA POWER** + **Open-Meteo** (climate)
+- Free external APIs (no key): **Nominatim** (geocoding), **NASA POWER** + **Open-Meteo**
+  (climate), **PVGIS** (solar PV yield); optional **NREL PVWatts** (solar cross-check, needs a free key)
+
+See [`docs/DATA_SOURCES.md`](docs/DATA_SOURCES.md) for the full data-source map and methodology.
 
 ---
 
@@ -51,6 +54,9 @@ ANTHROPIC_API_KEY=your_key_here
 # Without these the app still runs; auth/save show a "not configured" message.
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# Optional — enables the NREL PVWatts solar cross-check.
+NREL_API_KEY=your_nrel_key_here
 ```
 
 **The app compiles and runs with no keys at all** — the assessment falls back to
@@ -87,8 +93,9 @@ Open http://localhost:3000.
 Landing (enter address)
    → /assess  multi-step questionnaire (property, energy, appliances, goals, photos)
    → POST /api/assess
-        1. Geocode address (Nominatim)
-        2. Fetch climate data (NASA POWER → Open-Meteo fallback)
+        1. Geocode address / postal code / coordinates (Nominatim)
+        2. Fetch climate (NASA POWER → Open-Meteo) + resource models
+           (PVGIS PV yield, optional NREL PVWatts, modelled wind AEP)
         3. Claude (claude-sonnet-4-6) builds the structured assessment
            (+ Claude Vision on uploaded photos). No key → deterministic mock.
    → /results  full dashboard (energy profile, viability, recommendations,
@@ -121,10 +128,13 @@ src/
 │   ├── components-preview/      # design-system preview
 │   └── api/assess/route.ts      # geocode + climate + Anthropic
 ├── components/  (ui, landing, questionnaire, results, auth)
-├── lib/         (anthropic, geocode, climate, mock, supabase, assessments, utils, image)
+├── lib/         (anthropic, geocode, climate, resources, recompute, mock,
+│                 supabase, assessments, utils, image)
 ├── store/       (questionnaire Zustand store)
 └── types/       (shared domain types)
 supabase/schema.sql              # run once in the Supabase SQL editor
+docs/DATA_SOURCES.md             # data-source map + methodology
+docs/everstead_build_spec.md     # original product spec
 ```
 
 `/components-preview` renders every core UI component in both light and dark
