@@ -13,132 +13,151 @@
    Theme is controlled by next-themes via the data-theme attribute on <html>.
    ===================================================================== */
 
-/* ---------- LIGHT THEME (default) ---------- */
+/* ---------- LIGHT THEME (default) — warm premium ---------- */
 :root,
 [data-theme="light"] {
-  /* Foundation - bright, airy, clean */
+  /* Type families (loaded via Fontshare link in layout.tsx) */
+  --font-sora: "Clash Display", ui-sans-serif, system-ui, sans-serif;
+  --font-outfit: "General Sans", ui-sans-serif, system-ui, sans-serif;
+
+  /* Foundation - warm paper, not cold blue-grey */
   --bg-deepest: #ffffff;
-  --bg-base: #f7f9fc;
-  --bg-elevated: #ffffff;
-  --bg-surface: #eef2f8;
+  --bg-base: #faf7f1;
+  --bg-elevated: #fffdf9;
+  --bg-surface: #f1ebe1;
 
-  /* Energy accent - teal/cyan */
-  --energy-primary: #00b89f;
-  --energy-bright: #00d4b8;
-  --energy-dim: #5fd9c9;
+  /* Energy accent - teal/cyan (slightly warmed) */
+  --energy-primary: #009e8a;
+  --energy-bright: #00c4ab;
+  --energy-dim: #6fcabd;
 
-  /* Solar accent - warm amber/gold */
-  --solar: #f5a623;
-  --solar-bright: #ffb627;
+  /* Solar accent - warm amber/gold (a co-lead accent now, for warmth) */
+  --solar: #e8902a;
+  --solar-bright: #f5a623;
 
   /* Wind accent - cool blue */
   --wind: #3b82c4;
 
   /* Success/savings - green */
-  --savings: #06b080;
+  --savings: #0a9d75;
 
   /* Danger / validation */
-  --danger: #e5484d;
+  --danger: #d6453f;
 
   /* Dark ink that rides on energy fills (buttons) — passes contrast on teal */
-  --accent-ink: #04201c;
+  --accent-ink: #06231f;
 
-  /* Text */
-  --text-primary: #0f1726;
-  --text-secondary: #56627a;
-  --text-tertiary: #94a0b8;
+  /* Text - warm near-black */
+  --text-primary: #1d1813;
+  --text-secondary: #685f55;
+  --text-tertiary: #a39a8c;
 
-  /* Borders and dividers */
-  --border-subtle: rgba(15, 23, 38, 0.08);
-  --border-glow: rgba(0, 184, 159, 0.4);
+  /* Borders and dividers - warm hairline */
+  --border-subtle: rgba(40, 28, 14, 0.12);
+  --border-glow: rgba(0, 158, 138, 0.4);
 
-  /* Glass effect (light) */
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.9);
-  --card-shadow: 0 8px 32px rgba(15, 23, 38, 0.08);
-  --shadow-whisper: 0 1px 2px rgba(15, 23, 38, 0.05);
+  /* Glass effect (light, warm) */
+  --glass-bg: rgba(255, 253, 249, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.85);
+  --card-shadow: 0 10px 34px rgba(40, 28, 14, 0.1);
+  /* Soft warm elevation so cards don't read flat/clinical */
+  --shadow-whisper: 0 1px 2px rgba(40, 28, 14, 0.05), 0 6px 20px rgba(40, 28, 14, 0.05);
 
-  /* Glow intensity (subtler in light mode) */
+  /* Ambient intensities (subtle in light) */
   --glow-strength: 0.18;
   --orb-opacity: 0.35;
-  --grid-opacity: 0.025;
-  --noise-opacity: 0.02;
+  --grid-opacity: 0.03;
+  --noise-opacity: 0.025;
 
-  /* Gradients */
-  --gradient-energy: linear-gradient(135deg, #00b89f 0%, #3b82c4 100%);
-  --gradient-solar: linear-gradient(135deg, #f5a623 0%, #ff6b6b 100%);
-  --gradient-hero: linear-gradient(180deg, #ffffff 0%, #f7f9fc 100%);
+  /* Gradients - warm */
+  --gradient-energy: linear-gradient(135deg, #009e8a 0%, #2f6fb0 100%);
+  --gradient-solar: linear-gradient(135deg, #f5a623 0%, #ff6b4a 100%);
+  --gradient-hero: linear-gradient(180deg, #fffdf9 0%, #faf7f1 100%);
+  /* warm teal→gold bloom */
   --gradient-glow: radial-gradient(
-    circle at 50% 0%,
-    rgba(0, 184, 159, 0.1) 0%,
-    transparent 55%
-  );
+      circle at 30% 0%,
+      rgba(0, 158, 138, 0.1) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 10%,
+      rgba(245, 166, 35, 0.08) 0%,
+      transparent 45%
+    );
 }
 
-/* ---------- DARK THEME (toggle) ---------- */
+/* ---------- DARK THEME (toggle) — warm premium near-black ---------- */
 [data-theme="dark"] {
-  /* Foundation - deep space */
-  --bg-deepest: #0a0e1a;
-  --bg-base: #0f1420;
-  --bg-elevated: #161c2c;
-  --bg-surface: #1d2438;
+  --font-sora: "Clash Display", ui-sans-serif, system-ui, sans-serif;
+  --font-outfit: "General Sans", ui-sans-serif, system-ui, sans-serif;
+
+  /* Foundation - warm espresso-black, not cold navy */
+  --bg-deepest: #0c0a08;
+  --bg-base: #15110d;
+  --bg-elevated: #1d1813;
+  --bg-surface: #28211a;
 
   /* Energy accent - luminous */
-  --energy-primary: #00e5c7;
-  --energy-bright: #2dffe0;
-  --energy-dim: #00a896;
+  --energy-primary: #18e0c2;
+  --energy-bright: #45ffe4;
+  --energy-dim: #0f9e8b;
 
   /* Solar accent */
   --solar: #ffb627;
   --solar-bright: #ffd166;
 
   /* Wind accent */
-  --wind: #4ea8de;
+  --wind: #59abe0;
 
   /* Success/savings */
-  --savings: #06d6a0;
+  --savings: #16d49b;
 
   /* Danger / validation */
   --danger: #ff6b6b;
 
   /* Dark ink that rides on energy fills (buttons) */
-  --accent-ink: #04201c;
+  --accent-ink: #06231f;
 
-  /* Text */
-  --text-primary: #f0f4fc;
-  --text-secondary: #94a3c4;
-  --text-tertiary: #5a6788;
+  /* Text - warm off-white */
+  --text-primary: #f6f1e9;
+  --text-secondary: #b6aa9b;
+  --text-tertiary: #7d7164;
 
   /* Borders */
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-glow: rgba(0, 229, 199, 0.3);
+  --border-subtle: rgba(255, 244, 230, 0.1);
+  --border-glow: rgba(24, 224, 194, 0.35);
 
-  /* Glass effect (dark) */
-  --glass-bg: rgba(29, 36, 56, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  --shadow-whisper: 0 1px 2px rgba(0, 0, 0, 0.25);
+  /* Glass effect (dark, warm) */
+  --glass-bg: rgba(29, 24, 19, 0.62);
+  --glass-border: rgba(255, 244, 230, 0.1);
+  --card-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  --shadow-whisper: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 28px rgba(0, 0, 0, 0.3);
 
-  /* Glow intensity (richer in dark mode) */
-  --glow-strength: 0.3;
+  /* Ambient intensities (richer in dark) */
+  --glow-strength: 0.32;
   --orb-opacity: 0.6;
-  --grid-opacity: 0.05;
-  --noise-opacity: 0.035;
+  --grid-opacity: 0.06;
+  --noise-opacity: 0.04;
 
   /* Gradients */
-  --gradient-energy: linear-gradient(135deg, #00e5c7 0%, #4ea8de 100%);
-  --gradient-solar: linear-gradient(135deg, #ffb627 0%, #ff6b6b 100%);
+  --gradient-energy: linear-gradient(135deg, #18e0c2 0%, #59abe0 100%);
+  --gradient-solar: linear-gradient(135deg, #ffb627 0%, #ff7a4a 100%);
   --gradient-hero: linear-gradient(
     180deg,
-    #0a0e1a 0%,
-    #0f1420 50%,
-    #161c2c 100%
+    #0c0a08 0%,
+    #15110d 55%,
+    #1d1813 100%
   );
   --gradient-glow: radial-gradient(
-    circle at 50% 0%,
-    rgba(0, 229, 199, 0.15) 0%,
-    transparent 60%
-  );
+      circle at 30% 0%,
+      rgba(24, 224, 194, 0.16) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 80% 8%,
+      rgba(255, 182, 39, 0.1) 0%,
+      transparent 50%
+    );
 }
 
 /* ---------- Tailwind token mapping (v4) ----------
@@ -174,10 +193,10 @@
   --font-display: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
 
-  /* Radii */
+  /* Radii — slightly softer for a warmer, premium feel */
   --radius-btn: 12px;
-  --radius-card: 16px;
-  --radius-panel: 24px;
+  --radius-card: 18px;
+  --radius-panel: 28px;
 }
 
 /* ---------- Base styles ---------- */

@@ -1,25 +1,11 @@
 import type { Metadata } from "next";
-import { Sora, Outfit, JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 
-/* Display / headlines — geometric, modern, technical */
-const sora = Sora({
-  variable: "--font-sora",
-  subsets: ["latin"],
-  weight: ["600", "700", "800"],
-  display: "swap",
-});
-
-/* Body / UI — clean, friendly, contemporary */
-const outfit = Outfit({
-  variable: "--font-outfit",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  display: "swap",
-});
-
-/* Data / numbers — precise, instrumentation feel */
+/* Display + body load from Fontshare (Clash Display + General Sans) via a
+   stylesheet link in <head> below — distinctive, warm, premium; not the
+   generic geometric sans look. Data/numbers stay on JetBrains Mono. */
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains",
   subsets: ["latin"],
@@ -60,8 +46,15 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${sora.variable} ${outfit.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${jetbrainsMono.variable} h-full antialiased`}
     >
+      <head>
+        {/* Fontshare: Clash Display (display) + General Sans (body/UI) */}
+        <link
+          rel="stylesheet"
+          href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap"
+        />
+      </head>
       <body className="min-h-full flex flex-col">
         <ThemeProvider>{children}</ThemeProvider>
       </body>
