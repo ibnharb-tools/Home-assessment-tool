@@ -6,7 +6,10 @@ import { HomeScene } from "./HomeScene";
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden px-6 pt-32 pb-20 md:pt-36 md:pb-28">
+    <section
+      aria-labelledby="hero-heading"
+      className="relative overflow-hidden px-6 pt-32 pb-20 md:pt-36 md:pb-28"
+    >
       {/* one static warm bloom + faint grid — no orbs */}
       <div className="ambient-glow pointer-events-none absolute inset-0 -z-10" />
       <div className="grid-bg pointer-events-none absolute inset-0 -z-10" />
@@ -26,10 +29,11 @@ export function Hero() {
           </motion.div>
 
           <motion.h1
+            id="hero-heading"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-6 max-w-[15ch] font-display font-semibold leading-[1.02] tracking-[-0.02em] text-[clamp(2.75rem,5vw+1rem,4.75rem)]"
+            className="mt-6 max-w-[15ch] text-balance font-display font-semibold leading-[1.02] tracking-[-0.02em] text-[clamp(2.75rem,5vw+1rem,4.75rem)]"
           >
             Let&apos;s energize your{" "}
             <span className="accent-underline">home</span>.
@@ -41,9 +45,10 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.16, ease: [0.16, 1, 0.3, 1] }}
             className="mt-6 max-w-[50ch] text-lg text-ink-soft md:text-xl"
           >
-            Discover your property&apos;s clean energy potential in minutes — no
-            utility bill needed. Answer a few questions and our AI designs your
-            path to energy independence.
+            Enter your address and answer a few questions. In minutes,
+            you&apos;ll have a detailed assessment: which technologies suit
+            your property, estimated costs, savings projections and the
+            rebates you qualify for.
           </motion.p>
 
           <motion.div

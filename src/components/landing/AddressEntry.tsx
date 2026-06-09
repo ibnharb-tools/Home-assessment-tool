@@ -62,7 +62,7 @@ export function AddressEntry({ className }: { className?: string }) {
             }}
             placeholder="Address, postal code, or coordinates"
             aria-label="Property address, postal code, or coordinates"
-            className="w-full bg-transparent py-3 text-base text-ink placeholder:text-ink-faint outline-none"
+            className="w-full bg-transparent py-3 text-base text-ink placeholder:text-ink-soft outline-none"
           />
         </div>
         <Button type="submit" size="lg" className="shrink-0">
