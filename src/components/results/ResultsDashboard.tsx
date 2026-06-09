@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Zap, DollarSign, Clock, Leaf, AlertTriangle, Plus, RotateCcw } from "lucide-react";
+import { Zap, DollarSign, Clock, Leaf, AlertTriangle, Plus, Pencil, RotateCcw } from "lucide-react";
 import type { Assessment, QuestionnaireData } from "@/types";
 import { Logo, ThemeToggle, StatCard, Button } from "@/components/ui";
 import { recomputeFromSelection } from "@/lib/recompute";
@@ -15,6 +15,7 @@ import { PhotoInsights } from "./PhotoInsights";
 import { SavingsCharts } from "./SavingsCharts";
 import { FinancialBreakdown } from "./FinancialBreakdown";
 import { EnvironmentalImpact } from "./EnvironmentalImpact";
+import { NextSteps } from "./NextSteps";
 import { SaveCTA } from "./SaveCTA";
 
 export function ResultsDashboard({
@@ -75,6 +76,19 @@ export function ResultsDashboard({
 
   const isMock = assessment.meta?.mock;
 
+  // Warn before tab-close or hard refresh when the assessment hasn't been saved.
+  useEffect(() => {
+    if (saved) return;
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!dismissed) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [saved, dismissed]);
+
   return (
     <main className="relative min-h-screen px-6 pb-24 pt-6">
       <div className="ambient-glow pointer-events-none fixed inset-0 -z-10" />
@@ -85,7 +99,13 @@ export function ResultsDashboard({
           <Logo />
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            {/* New starts from the landing entry, which resets the board. */}
+            {!saved && (
+              <Link href="/assess">
+                <Button variant="ghost" size="sm">
+                  <Pencil size={15} /> Edit answers
+                </Button>
+              </Link>
+            )}
             <Link href="/">
               <Button variant="secondary" size="sm">
                 <Plus size={16} /> New
@@ -100,7 +120,7 @@ export function ResultsDashboard({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
-          <p className="text-ink-soft">{assessment.meta?.address}</p>
+          <p className="break-words text-ink-soft">{assessment.meta?.address}</p>
           <h1 className="mt-1 font-display text-4xl font-extrabold leading-[1.05] tracking-[-0.02em] md:text-5xl">
             Your clean energy{" "}
             <span className="accent-underline">assessment</span>
@@ -127,10 +147,17 @@ export function ResultsDashboard({
 
         {!isDefaultSelection && (
           <div className="mt-4 flex flex-wrap items-center gap-3">
-            <span className="text-sm text-ink-soft">
-              Showing a custom plan ({selected.size}{" "}
-              {selected.size === 1 ? "technology" : "technologies"}).
-            </span>
+            {selected.size === 0 ? (
+              <span className="inline-flex items-center gap-2 rounded-btn bg-surface px-4 py-2 text-sm text-ink-soft">
+                <AlertTriangle size={14} className="shrink-0 text-solar" />
+                No technologies selected. Enable at least one to see projections.
+              </span>
+            ) : (
+              <span className="text-sm text-ink-soft">
+                Showing a custom plan ({selected.size}{" "}
+                {selected.size === 1 ? "technology" : "technologies"}).
+              </span>
+            )}
             <button
               type="button"
               onClick={() => setSelected(new Set(recommendedTechs))}
@@ -154,6 +181,7 @@ export function ResultsDashboard({
           <SavingsCharts assessment={effective} />
           <FinancialBreakdown assessment={effective} />
           <EnvironmentalImpact assessment={effective} />
+          <NextSteps assessment={effective} />
           {!saved && !dismissed && (
             <SaveCTA
               onCreateAccount={() => setShowSave(true)}

@@ -36,7 +36,11 @@ export function EnergyProfile({ assessment }: { assessment: Assessment }) {
 
         <div className="mt-8 grid items-center gap-8 lg:grid-cols-2">
           {/* Donut */}
-          <div className="relative h-64 w-full">
+          <div
+            className="relative h-64 w-full"
+            role="img"
+            aria-label={`Donut chart: energy usage breakdown totalling ${formatNumber(energyProfile.estimatedAnnualKwh)} kWh per year across ${data.length} categories. Full data table follows.`}
+          >
             <ChartReady className="h-full w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -115,6 +119,33 @@ export function EnergyProfile({ assessment }: { assessment: Assessment }) {
         <div className="mt-6 rounded-card border border-line bg-surface/60 p-4 text-sm text-ink-soft">
           {energyProfile.comparisonToAverage}
         </div>
+
+        <table className="sr-only">
+          <caption>Annual energy usage breakdown for your property</caption>
+          <thead>
+            <tr>
+              <th scope="col">Category</th>
+              <th scope="col">kWh per year</th>
+              <th scope="col">Share</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((d) => (
+              <tr key={d.name}>
+                <td>{d.name}</td>
+                <td>{formatNumber(d.value)} kWh</td>
+                <td>{d.percentage}%</td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr>
+              <th scope="row">Total</th>
+              <td>{formatNumber(energyProfile.estimatedAnnualKwh)} kWh</td>
+              <td>100%</td>
+            </tr>
+          </tfoot>
+        </table>
       </Card>
     </Reveal>
   );

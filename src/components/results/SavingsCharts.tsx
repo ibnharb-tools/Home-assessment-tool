@@ -93,6 +93,10 @@ export function SavingsCharts({ assessment }: { assessment: Assessment }) {
           </div>
         </div>
 
+        <div
+          role="img"
+          aria-label={`Area chart: ${isSavings ? `cumulative net savings over 25 years, reaching ${formatCurrency(endSavings)} by year 25${breakEvenYear ? `, break-even at year ${breakEvenYear}` : ""}` : `cumulative CO₂ avoided over 25 years, totalling ${endEmissions.toFixed(1)} tonnes`}. Full data table follows.`}
+        >
         <ChartReady className="mt-8 h-72 w-full md:h-96">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
@@ -194,6 +198,7 @@ export function SavingsCharts({ assessment }: { assessment: Assessment }) {
             </AreaChart>
           </ResponsiveContainer>
         </ChartReady>
+        </div>
 
         {/* summary chips */}
         <div className="mt-6 flex flex-wrap gap-3">
@@ -212,6 +217,34 @@ export function SavingsCharts({ assessment }: { assessment: Assessment }) {
             </Chip>
           )}
         </div>
+
+        <table className="sr-only">
+          <caption>
+            25-year projections for your renewable energy system
+            {breakEvenYear !== null
+              ? `. Net savings break even at year ${breakEvenYear}.`
+              : "."}
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Year</th>
+              <th scope="col">Net cumulative savings (CAD)</th>
+              <th scope="col">CO₂ avoided (tonnes)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[0, 5, 10, 15, 20, 25].map((yr) => {
+              const row = data[yr];
+              return (
+                <tr key={yr}>
+                  <td>{yr === 0 ? "Start" : `Year ${yr}`}</td>
+                  <td>{formatCurrency(row.savings)}</td>
+                  <td>{row.emissions.toFixed(1)} t</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </Card>
     </Reveal>
   );

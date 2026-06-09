@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
 const MESSAGES = [
@@ -67,20 +67,22 @@ export function AssessmentLoader() {
       </div>
 
       <h2 className="mt-12 font-display text-2xl font-bold md:text-3xl">
-        Designing your energy future
+        Analyzing your property
       </h2>
 
-      <div className="mt-3 h-6">
-        <motion.p
-          key={idx}
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -6 }}
-          transition={{ duration: 0.4 }}
-          className="font-mono text-sm text-energy"
-        >
-          {MESSAGES[idx]}
-        </motion.p>
+      <div className="mt-3 h-6 overflow-hidden">
+        <AnimatePresence mode="wait">
+          <motion.p
+            key={idx}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+            className="font-mono text-sm text-energy"
+          >
+            {MESSAGES[idx]}
+          </motion.p>
+        </AnimatePresence>
       </div>
 
       <p className="mt-6 max-w-sm text-sm text-ink-faint">

@@ -40,16 +40,14 @@ export function PhotoInsights({
             ))}
           </div>
 
-          <div className="flex">
-            <div className="rounded-card border border-line bg-surface/60 p-5">
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-btn bg-elevated text-energy">
-                <Camera size={18} />
-              </span>
-              <p className="mt-4 text-ink-soft">
-                {assessment.photoInsights ??
-                  "No specific observations were returned for these photos."}
-              </p>
-            </div>
+          <div className="flex flex-col gap-4 border-t border-line pt-6 lg:border-t-0 lg:pt-0">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-btn bg-elevated text-energy">
+              <Camera size={18} />
+            </span>
+            <p className="text-ink-soft">
+              {assessment.photoInsights ??
+                "No specific observations were returned for these photos."}
+            </p>
           </div>
         </div>
       </Card>

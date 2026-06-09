@@ -1,6 +1,6 @@
 "use client";
 
-import { Bookmark, AlertTriangle } from "lucide-react";
+import { Bookmark } from "lucide-react";
 import { Button } from "@/components/ui";
 import { Reveal } from "@/components/Reveal";
 
@@ -29,8 +29,8 @@ export function SaveCTA({
             Save your assessment
           </h2>
           <p className="mt-3 text-ink-soft">
-            Create a free account to save this assessment, track your energy
-            journey over time, and come back to it anytime.
+            Create a free account to keep this report, compare it against future
+            assessments, and share it with your household.
           </p>
 
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -42,9 +42,8 @@ export function SaveCTA({
             </Button>
           </div>
 
-          <p className="mt-6 inline-flex items-center gap-2 text-sm text-ink-faint">
-            <AlertTriangle size={15} className="text-solar" />
-            Heads up: if you leave without saving, you&apos;ll lose this assessment.
+          <p className="mt-6 text-sm text-ink-faint">
+            Without an account, this assessment ends when you close the tab.
           </p>
         </div>
       </div>

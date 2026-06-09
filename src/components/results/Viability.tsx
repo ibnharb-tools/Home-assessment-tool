@@ -12,6 +12,8 @@ const RATING_FRACTION: Record<string, number> = {
   Poor: 0.25,
   High: 1,
   Low: 0.33,
+  Recommended: 1,
+  Optional: 0.4,
 };
 
 interface Tile {
@@ -19,7 +21,8 @@ interface Tile {
   label: string;
   icon: LucideIcon;
   rating: string;
-  detail: string | null;
+  detail: string;
+  tooltip: string;
   accentVar: string;
   accentText: string;
 }
@@ -34,6 +37,8 @@ export function Viability({ assessment }: { assessment: Assessment }) {
       icon: Sun,
       rating: locationData.solarRating,
       detail: `${locationData.solarIrradiance.toFixed(1)} kWh/m²/day`,
+      tooltip:
+        "Average solar energy reaching a flat surface at your location each day. Canada averages 3.5 to 4.5 kWh/m²/day — higher values mean more output from the same panel area.",
       accentVar: "var(--solar)",
       accentText: "text-solar",
     },
@@ -43,8 +48,10 @@ export function Viability({ assessment }: { assessment: Assessment }) {
       icon: Wind,
       rating: locationData.windRating,
       detail: locationData.windSpeed
-        ? `${locationData.windSpeed.toFixed(1)} m/s @ 50m`
+        ? `${locationData.windSpeed.toFixed(1)} m/s avg`
         : "—",
+      tooltip:
+        "Average wind speed at 50 metres above ground — the standard measurement height for residential turbines. Sites with at least 5 m/s are generally worth a full wind assessment.",
       accentVar: "var(--wind)",
       accentText: "text-wind",
     },
@@ -53,7 +60,9 @@ export function Viability({ assessment }: { assessment: Assessment }) {
       label: "Geothermal",
       icon: Thermometer,
       rating: locationData.geothermalViability,
-      detail: "Ground-source",
+      detail: "Ground-source heat pump",
+      tooltip:
+        "Geothermal viability for your region, based on typical geology and ground temperatures. A site assessment by a geothermal contractor will confirm whether your lot is suitable.",
       accentVar: "var(--energy-primary)",
       accentText: "text-energy",
     },
@@ -66,7 +75,9 @@ export function Viability({ assessment }: { assessment: Assessment }) {
           ?.recommended
           ? "Recommended"
           : "Optional",
-      detail: "Storage & backup",
+      detail: "Surplus storage and backup",
+      tooltip:
+        "Battery viability reflects how well storage fits your energy profile — not a geographic factor like solar or wind. Recommended when your system output significantly exceeds daytime consumption.",
       accentVar: "var(--savings)",
       accentText: "text-savings",
     },
@@ -112,7 +123,12 @@ export function Viability({ assessment }: { assessment: Assessment }) {
                     }}
                   />
                 </div>
-                <p className="mt-3 font-mono text-sm text-ink-soft">{t.detail}</p>
+                <p
+                  className="mt-3 font-mono text-sm text-ink-soft"
+                  title={t.tooltip}
+                >
+                  {t.detail}
+                </p>
               </Card>
             </Reveal>
           ))}
