@@ -42,7 +42,7 @@ export function AddressEntry({ className }: { className?: string }) {
           e.preventDefault();
           handleStart();
         }}
-        className="flex flex-col gap-2 sm:flex-row sm:items-stretch"
+        className="flex flex-col gap-2 sm:flex-row sm:items-center"
       >
         <div
           className={cn(
@@ -65,7 +65,11 @@ export function AddressEntry({ className }: { className?: string }) {
             className="w-full bg-transparent py-3 text-base text-ink placeholder:text-ink-soft outline-none"
           />
         </div>
-        <Button type="submit" size="lg" className="shrink-0">
+        <Button
+          type="submit"
+          size="lg"
+          className="shrink-0 min-h-[52px] max-sm:w-full"
+        >
           Start Assessment <ArrowRight size={18} />
         </Button>
       </form>
@@ -74,7 +78,7 @@ export function AddressEntry({ className }: { className?: string }) {
       <div className="mt-3 flex min-h-[1.25rem] items-center gap-2 text-sm">
         {error ? (
           <span className="text-danger">
-            Enter an address, postal code, or coordinates like “45.42, -75.70”.
+            Enter an address, postal code, or coordinates like "45.42, -75.70".
           </span>
         ) : (
           <span className="inline-flex items-center gap-2 text-ink-faint">

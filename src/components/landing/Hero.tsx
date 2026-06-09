@@ -1,12 +1,26 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 import { AddressEntry } from "./AddressEntry";
 import { HomeScene } from "./HomeScene";
 
 export function Hero() {
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // Track how far the hero section has scrolled out of view (0 → 1).
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+
+  // Illustration lags behind the scroll — appears to float on a deeper layer.
+  // Positive y = element moves down relative to container = slower scroll = depth.
+  const illustrationY = useTransform(scrollYProgress, [0, 1], [0, 55]);
+
   return (
     <section
+      ref={sectionRef}
       aria-labelledby="hero-heading"
       className="relative overflow-hidden px-6 pt-32 pb-20 md:pt-36 md:pb-28"
     >
@@ -61,8 +75,9 @@ export function Hero() {
           </motion.div>
         </div>
 
-        {/* Right: the living home — large, open, no frame; bleeds to the edge */}
+        {/* Right: the living home — floats on a deeper parallax layer */}
         <motion.div
+          style={{ y: illustrationY }}
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}

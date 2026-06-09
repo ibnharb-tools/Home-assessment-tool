@@ -2,6 +2,7 @@
 
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { MotionConfig } from "framer-motion";
+import { ReactLenis } from "lenis/react";
 import type { ComponentProps } from "react";
 
 /**
@@ -26,7 +27,11 @@ export function ThemeProvider({
       disableTransitionOnChange={false}
       {...props}
     >
-      <MotionConfig reducedMotion="user">{children}</MotionConfig>
+      <MotionConfig reducedMotion="user">
+        <ReactLenis root options={{ lerp: 0.065, smoothWheel: true }}>
+          {children}
+        </ReactLenis>
+      </MotionConfig>
     </NextThemesProvider>
   );
 }

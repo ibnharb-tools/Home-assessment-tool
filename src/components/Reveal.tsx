@@ -20,7 +20,7 @@ const makeVariants = (y: number): Variants => ({
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.9, ease: [0.22, 1, 0.36, 1] },
   },
 });
 
@@ -31,7 +31,7 @@ const makeVariants = (y: number): Variants => ({
 export function Reveal({
   children,
   delay = 0,
-  y = 24,
+  y = 28,
   className,
   onMount = false,
   as = "div",
@@ -46,7 +46,7 @@ export function Reveal({
       initial="hidden"
       {...(onMount
         ? { animate: "show" }
-        : { whileInView: "show", viewport: { once: true, margin: "-80px" } })}
+        : { whileInView: "show", viewport: { once: true, margin: "-50px" } })}
       transition={{ delay }}
     >
       {children}

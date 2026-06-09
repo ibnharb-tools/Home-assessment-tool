@@ -29,7 +29,7 @@ function Turbine({
   return (
     <g transform={`translate(${x} ${hubY}) scale(${scale})`}>
       {/* base shadow */}
-      <ellipse cx={0} cy={towerH} rx={16} ry={4} fill="#000" opacity={0.12} />
+      <ellipse cx={0} cy={towerH} rx={16} ry={4} fill="#000" opacity={0.08} />
       {/* tapered tower */}
       <path
         d={`M-3,0 L3,0 L6,${towerH} L-6,${towerH} Z`}
@@ -54,7 +54,7 @@ function Turbine({
 function Tree({ x, y, s = 1 }: { x: number; y: number; s?: number }) {
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
-      <ellipse cx={0} cy={6} rx={20} ry={5} fill="#000" opacity={0.12} />
+      <ellipse cx={0} cy={6} rx={20} ry={5} fill="#000" opacity={0.08} />
       <rect x={-3} y={-26} width={6} height={32} rx={2} fill="var(--home-pipe)" />
       <circle cx={0} cy={-40} r={20} fill="url(#treeGrad)" />
       <circle cx={-12} cy={-30} r={14} fill="url(#treeGrad)" />
@@ -121,10 +121,15 @@ export function HomeScene({ className }: { className?: string }) {
           <stop offset="0%" stopColor="var(--savings)" />
           <stop offset="100%" stopColor="#0b7a55" />
         </radialGradient>
+
+        {/* Ground — transparent at the top edge, opaque below, so the terrain
+            blends into the background instead of sitting on a hard block. */}
         <linearGradient id="groundGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="var(--home-ground)" />
-          <stop offset="100%" stopColor="var(--home-pipe)" />
+          <stop offset="0%" stopColor="var(--home-ground)" stopOpacity="0" />
+          <stop offset="28%" stopColor="var(--home-ground)" stopOpacity="0.8" />
+          <stop offset="100%" stopColor="var(--home-pipe)" stopOpacity="1" />
         </linearGradient>
+
         <linearGradient id="shimmer" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0%" stopColor="#ffffff" stopOpacity="0" />
           <stop offset="50%" stopColor="#ffffff" stopOpacity="0.8" />
@@ -136,6 +141,17 @@ export function HomeScene({ className }: { className?: string }) {
         <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
           <feGaussianBlur stdDeviation="5" />
         </filter>
+
+        {/* Soft drop shadow for the house — feathered, no hard edge */}
+        <filter id="houseDrop" x="-18%" y="-6%" width="136%" height="140%">
+          <feDropShadow dx="0" dy="14" stdDeviation="22" floodOpacity="0.13" />
+        </filter>
+
+        {/* Bottom dissolve: fades the scene into the page background */}
+        <linearGradient id="bottomFade" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="var(--bg-base)" stopOpacity="0" />
+          <stop offset="100%" stopColor="var(--bg-base)" stopOpacity="1" />
+        </linearGradient>
       </defs>
 
       {/* ===== SKY: day (sun) vs night (moon + stars) ===== */}
@@ -190,19 +206,19 @@ export function HomeScene({ className }: { className?: string }) {
       <Turbine x={92} hubY={150} baseY={372} scale={1.08} />
       <Turbine x={584} hubY={206} baseY={372} scale={0.78} fast />
 
-      {/* ===== ground ===== */}
+      {/* ===== ground — soft organic edge dissolves into background ===== */}
       <path d="M0,372 Q320,346 640,372 L640,480 L0,480 Z" fill="url(#groundGrad)" />
-      {/* soil band (for the borehole cutaway feel) */}
+      {/* soil band (faint depth layer) */}
       <path
         d="M0,408 Q320,388 640,408 L640,480 L0,480 Z"
         fill="#000"
-        opacity={0.06}
+        opacity={0.04}
       />
 
       {/* ===== geothermal: heat pump + loop into a borehole ===== */}
       <g>
         {/* heat-pump unit beside the house */}
-        <rect x={176} y={336} width={34} height={30} rx={4} fill="var(--home-wall-2)" stroke="var(--border-subtle)" />
+        <rect x={176} y={336} width={34} height={30} rx={6} fill="var(--home-wall-2)" stroke="var(--border-subtle)" />
         <circle cx={193} cy={351} r={9} fill="var(--home-roof)" />
         <circle cx={193} cy={351} r={3} fill="var(--energy-primary)" />
         {/* loop */}
@@ -221,17 +237,17 @@ export function HomeScene({ className }: { className?: string }) {
         </g>
       </g>
 
-      {/* ===== house ===== */}
-      <g>
+      {/* ===== house — wrapped in soft drop-shadow filter for depth ===== */}
+      <g filter="url(#houseDrop)">
         {/* contact shadow */}
-        <ellipse cx={350} cy={364} rx={150} ry={16} fill="#000" opacity={0.14} filter="url(#soft)" />
+        <ellipse cx={350} cy={364} rx={150} ry={16} fill="#000" opacity={0.1} filter="url(#soft)" />
 
         {/* side wall (depth) */}
         <path d="M456,236 L502,213 L502,362 L456,362 Z" fill="var(--home-wall-2)" />
         {/* front wall */}
-        <rect x={224} y={236} width={232} height={126} rx={5} fill="url(#wallGrad)" />
+        <rect x={224} y={236} width={232} height={126} rx={8} fill="url(#wallGrad)" />
         {/* foundation */}
-        <rect x={218} y={356} width={244} height={10} rx={2} fill="var(--home-roof)" opacity={0.85} />
+        <rect x={218} y={356} width={244} height={10} rx={4} fill="var(--home-roof)" opacity={0.85} />
 
         {/* roof slab + fascia */}
         <path d="M210,200 L472,160 L496,200 L238,240 Z" fill="var(--home-roof)" opacity={0.9} />
@@ -280,8 +296,8 @@ export function HomeScene({ className }: { className?: string }) {
           { x: 386, y: 260, w: 50, h: 100 },
         ].map((win, i) => (
           <g key={i}>
-            <rect x={win.x - 2} y={win.y - 2} width={win.w + 4} height={win.h + 4} rx={4} fill="var(--home-wall-2)" />
-            <rect x={win.x} y={win.y} width={win.w} height={win.h} rx={3} fill={win.lit ? "var(--solar)" : "url(#glassGrad)"} opacity={win.lit ? 0.9 : 1} />
+            <rect x={win.x - 2} y={win.y - 2} width={win.w + 4} height={win.h + 4} rx={6} fill="var(--home-wall-2)" />
+            <rect x={win.x} y={win.y} width={win.w} height={win.h} rx={5} fill={win.lit ? "var(--solar)" : "url(#glassGrad)"} opacity={win.lit ? 0.9 : 1} />
             <line x1={win.x + win.w / 2} y1={win.y} x2={win.x + win.w / 2} y2={win.y + win.h} stroke="var(--home-wall-2)" strokeWidth={2} />
             <line x1={win.x} y1={win.y + win.h / 2} x2={win.x + win.w} y2={win.y + win.h / 2} stroke="var(--home-wall-2)" strokeWidth={2} />
           </g>
@@ -293,7 +309,7 @@ export function HomeScene({ className }: { className?: string }) {
             [242, 260, 58, 50],
             [386, 260, 50, 100],
           ].map(([x, y, w, h], i) => (
-            <rect key={i} x={x} y={y} width={w} height={h} rx={3} fill="var(--solar)" opacity={0.55} />
+            <rect key={i} x={x} y={y} width={w} height={h} rx={5} fill="var(--solar)" opacity={0.55} />
           ))}
         </g>
       </g>
@@ -309,9 +325,13 @@ export function HomeScene({ className }: { className?: string }) {
           stroke="var(--savings)"
           strokeWidth={2}
           fill="none"
-          opacity={0.7}
+          opacity={0.6}
         />
       ))}
+
+      {/* Bottom dissolve — fades the scene floor into the page bg, removing the
+          hard rectangular cutoff at the SVG boundary. */}
+      <rect x="0" y="418" width="640" height="62" fill="url(#bottomFade)" />
     </svg>
   );
 }
