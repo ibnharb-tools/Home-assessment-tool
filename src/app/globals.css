@@ -84,6 +84,15 @@
       rgba(245, 166, 35, 0.08) 0%,
       transparent 45%
     );
+
+  /* Living-home illustration palette (light) */
+  --home-wall: #efe6d6;
+  --home-wall-2: #e4d8c2;
+  --home-roof: #2c3a43;
+  --home-roof-2: #38505a;
+  --home-ground: #ece1cd;
+  --home-glass: #173b3f;
+  --home-pipe: #cdbfa6;
 }
 
 /* ---------- DARK THEME (toggle) — warm premium near-black ---------- */
@@ -158,6 +167,15 @@
       rgba(255, 182, 39, 0.1) 0%,
       transparent 50%
     );
+
+  /* Living-home illustration palette (dark) */
+  --home-wall: #2a241d;
+  --home-wall-2: #221d16;
+  --home-roof: #11201f;
+  --home-roof-2: #1b3330;
+  --home-ground: #18130d;
+  --home-glass: #0c2b2c;
+  --home-pipe: #3a3026;
 }
 
 /* ---------- Tailwind token mapping (v4) ----------
@@ -425,6 +443,81 @@
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+/* =====================================================================
+   LIVING HOME SCENE — animation primitives (turbines, solar shimmer,
+   geothermal flow). transform-box: fill-box lets SVG groups rotate about
+   their own center.
+   ===================================================================== */
+@keyframes turbine-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.turbine-spin {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: turbine-spin 7s linear infinite;
+}
+.turbine-spin-fast {
+  animation-duration: 4.5s;
+}
+
+@keyframes solar-shimmer {
+  0% {
+    transform: translateX(-120%) skewX(-18deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.9;
+  }
+  60% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateX(320%) skewX(-18deg);
+    opacity: 0;
+  }
+}
+.solar-shimmer {
+  animation: solar-shimmer 4.5s ease-in-out infinite;
+}
+
+@keyframes geo-flow {
+  to {
+    stroke-dashoffset: -28;
+  }
+}
+.geo-flow {
+  stroke-dasharray: 6 8;
+  animation: geo-flow 1.6s linear infinite;
+}
+
+@keyframes soft-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+.soft-bob {
+  animation: soft-bob 6s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.twinkle {
+  animation: twinkle 3s ease-in-out infinite;
 }
 
 /* Respect reduced motion */
