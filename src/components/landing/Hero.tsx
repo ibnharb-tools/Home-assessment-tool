@@ -12,9 +12,9 @@ export function Hero() {
       <div className="grid-bg pointer-events-none absolute inset-0 -z-10" />
       <div className="noise-overlay pointer-events-none absolute inset-0 -z-10" />
 
-      <div className="mx-auto grid max-w-[1200px] items-center gap-10 lg:grid-cols-12 lg:gap-6">
+      <div className="mx-auto grid max-w-[1200px] items-center gap-10 lg:grid-cols-12 lg:gap-4">
         {/* Left: editorial */}
-        <div className="lg:col-span-6">
+        <div className="lg:col-span-5">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -56,23 +56,14 @@ export function Hero() {
           </motion.div>
         </div>
 
-        {/* Right: the living home (animated centerpiece) */}
+        {/* Right: the living home — large, open, no frame; bleeds to the edge */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
+          initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="relative lg:col-span-6"
+          className="relative lg:col-span-7 lg:-mr-6 xl:-mr-16"
         >
-          <HomeScene />
-
-          {/* floating sample chips (honest copy) */}
-          <div className="pointer-events-none absolute left-2 top-6 rounded-full border border-line bg-elevated/90 px-3 py-1.5 text-xs font-medium text-ink-soft shadow-[var(--shadow-whisper)] backdrop-blur">
-            <span className="font-mono text-savings">9,200 kWh</span> / yr ·{" "}
-            <span className="text-ink-faint">sample</span>
-          </div>
-          <div className="pointer-events-none absolute bottom-10 right-2 rounded-full border border-line bg-elevated/90 px-3 py-1.5 text-xs font-medium text-ink-soft shadow-[var(--shadow-whisper)] backdrop-blur">
-            <span className="font-mono text-energy">7.4 yr</span> payback
-          </div>
+          <HomeScene className="lg:scale-110 lg:origin-right" />
         </motion.div>
       </div>
     </section>

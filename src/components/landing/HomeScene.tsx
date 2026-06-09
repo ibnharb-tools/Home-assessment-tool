@@ -3,13 +3,11 @@
 import { cn } from "@/lib/utils";
 
 /**
- * The "living home" — a hand-built SVG scene that animates the home's renewable
- * systems: solar panels shimmer, wind turbines spin continuously, and the
- * geothermal loop shows fluid flowing through the pipes. Theme-aware via the
- * --home-* CSS tokens. Honors prefers-reduced-motion (global reset).
- *
- * Built parametrically so pieces can later be reused by the assessment's
- * "build your home" live drawing.
+ * The "living home" — a detailed, depth-shaded SVG scene that animates the
+ * home's renewable systems: solar panels shimmer, wind turbines spin, and the
+ * geothermal loop shows fluid flowing into a borehole. Theme-aware via --home-*
+ * tokens, and day/night aware: the SUN shows in light mode, the MOON + stars in
+ * dark mode (sun fully removed at night). Honors prefers-reduced-motion.
  */
 
 function Turbine({
@@ -25,180 +23,295 @@ function Turbine({
   scale?: number;
   fast?: boolean;
 }) {
-  // Three tapered blades around the hub at 0/120/240 degrees.
-  const blade = "M0,-4 Q10,-30 4,-74 Q-2,-34 0,-4 Z";
+  // Airfoil blade: tapered, slight curve.
+  const blade = "M0,-5 C7,-26 7,-58 2,-82 C-1,-58 -4,-30 0,-5 Z";
+  const towerH = baseY - hubY;
   return (
     <g transform={`translate(${x} ${hubY}) scale(${scale})`}>
-      {/* pole */}
-      <rect
-        x={-2.5}
-        y={0}
-        width={5}
-        height={baseY - hubY}
-        rx={2.5}
-        fill="var(--home-roof-2)"
+      {/* base shadow */}
+      <ellipse cx={0} cy={towerH} rx={16} ry={4} fill="#000" opacity={0.12} />
+      {/* tapered tower */}
+      <path
+        d={`M-3,0 L3,0 L6,${towerH} L-6,${towerH} Z`}
+        fill="url(#towerGrad)"
       />
-      {/* rotor */}
       <g className={cn("turbine-spin", fast && "turbine-spin-fast")}>
         {[0, 120, 240].map((deg) => (
           <path
             key={deg}
             d={blade}
             transform={`rotate(${deg})`}
-            fill="var(--text-primary)"
-            opacity={0.85}
+            fill="url(#bladeGrad)"
           />
         ))}
       </g>
-      <circle r={5} fill="var(--solar)" />
+      <circle r={5.5} fill="var(--solar)" />
+      <circle r={2.2} fill="#fff" opacity={0.6} />
     </g>
   );
 }
 
-const PANEL_ROWS = 3;
-const PANEL_COLS = 5;
+function Tree({ x, y, s = 1 }: { x: number; y: number; s?: number }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <ellipse cx={0} cy={6} rx={20} ry={5} fill="#000" opacity={0.12} />
+      <rect x={-3} y={-26} width={6} height={32} rx={2} fill="var(--home-pipe)" />
+      <circle cx={0} cy={-40} r={20} fill="url(#treeGrad)" />
+      <circle cx={-12} cy={-30} r={14} fill="url(#treeGrad)" />
+      <circle cx={12} cy={-32} r={13} fill="url(#treeGrad)" />
+      <circle cx={-6} cy={-46} r={7} fill="#ffffff" opacity={0.12} />
+    </g>
+  );
+}
 
 export function HomeScene({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 640 480"
-      className={cn("h-auto w-full select-none", className)}
+      className={cn("h-auto w-full select-none overflow-visible", className)}
       role="img"
       aria-label="An illustrated home with solar panels, wind turbines and a geothermal loop"
     >
       <defs>
-        <radialGradient id="sun" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="var(--solar-bright)" stopOpacity="0.9" />
-          <stop offset="55%" stopColor="var(--solar)" stopOpacity="0.35" />
+        <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="var(--solar-bright)" stopOpacity="0.85" />
+          <stop offset="45%" stopColor="var(--solar)" stopOpacity="0.3" />
           <stop offset="100%" stopColor="var(--solar)" stopOpacity="0" />
         </radialGradient>
-        <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#103744" />
-          <stop offset="100%" stopColor="#0a2730" />
+        <radialGradient id="sunCore" cx="40%" cy="38%" r="70%">
+          <stop offset="0%" stopColor="#fff3d6" />
+          <stop offset="55%" stopColor="var(--solar-bright)" />
+          <stop offset="100%" stopColor="var(--solar)" />
+        </radialGradient>
+        <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#cfe0ff" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#cfe0ff" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="moonCore" cx="38%" cy="36%" r="75%">
+          <stop offset="0%" stopColor="#f4f6ff" />
+          <stop offset="100%" stopColor="#c3cde6" />
+        </radialGradient>
+
+        <linearGradient id="wallGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="var(--home-wall)" />
+          <stop offset="100%" stopColor="var(--home-wall-2)" />
+        </linearGradient>
+        <linearGradient id="roofGrad" x1="0" y1="0" x2="1" y2="0.4">
+          <stop offset="0%" stopColor="var(--home-roof-2)" />
+          <stop offset="100%" stopColor="var(--home-roof)" />
+        </linearGradient>
+        <linearGradient id="panelGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#15485a" />
+          <stop offset="100%" stopColor="#0a2530" />
+        </linearGradient>
+        <linearGradient id="glassGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="var(--home-glass)" />
+          <stop offset="55%" stopColor="var(--energy-dim)" stopOpacity="0.35" />
+          <stop offset="100%" stopColor="var(--home-glass)" />
+        </linearGradient>
+        <linearGradient id="towerGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#f3efe7" />
+          <stop offset="100%" stopColor="#c9c2b4" />
+        </linearGradient>
+        <linearGradient id="bladeGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="100%" stopColor="#d8d2c6" />
+        </linearGradient>
+        <radialGradient id="treeGrad" cx="38%" cy="34%" r="75%">
+          <stop offset="0%" stopColor="var(--savings)" />
+          <stop offset="100%" stopColor="#0b7a55" />
+        </radialGradient>
+        <linearGradient id="groundGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="var(--home-ground)" />
+          <stop offset="100%" stopColor="var(--home-pipe)" />
         </linearGradient>
         <linearGradient id="shimmer" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0%" stopColor="#ffffff" stopOpacity="0" />
-          <stop offset="50%" stopColor="#ffffff" stopOpacity="0.75" />
+          <stop offset="50%" stopColor="#ffffff" stopOpacity="0.8" />
           <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
         </linearGradient>
         <clipPath id="roofClip">
           <path d="M214,196 L470,158 L492,196 L236,234 Z" />
         </clipPath>
+        <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="5" />
+        </filter>
       </defs>
 
-      {/* sun / ambient */}
-      <circle cx="540" cy="96" r="120" fill="url(#sun)" className="soft-bob" />
-      {/* sparkles */}
-      {[
-        [120, 70],
-        [300, 50],
-        [430, 90],
-        [70, 150],
-        [580, 200],
-      ].map(([cx, cy], i) => (
-        <circle
-          key={i}
-          cx={cx}
-          cy={cy}
-          r={2.5}
-          fill="var(--energy-primary)"
-          className="twinkle"
-          style={{ animationDelay: `${i * 0.6}s` }}
-        />
-      ))}
-
-      {/* turbines (behind house) */}
-      <Turbine x={96} hubY={150} baseY={372} scale={1.05} />
-      <Turbine x={566} hubY={196} baseY={372} scale={0.8} fast />
-
-      {/* ground */}
-      <path
-        d="M0,372 Q320,344 640,372 L640,480 L0,480 Z"
-        fill="var(--home-ground)"
-      />
-
-      {/* geothermal loop (under ground) */}
-      <g fill="none" strokeLinecap="round">
-        <path
-          d="M250,372 L250,432 Q250,452 270,452 L300,452 Q320,452 320,432 L320,372"
-          stroke="var(--home-pipe)"
-          strokeWidth={9}
-        />
-        <path
-          d="M250,372 L250,432 Q250,452 270,452 L300,452 Q320,452 320,432 L320,372"
-          stroke="var(--energy-primary)"
-          strokeWidth={3.5}
-          className="geo-flow"
-        />
+      {/* ===== SKY: day (sun) vs night (moon + stars) ===== */}
+      <g className="scene-day">
+        <circle cx={552} cy={92} r={130} fill="url(#sunGlow)" className="soft-bob" />
+        <g className="soft-bob">
+          <circle cx={552} cy={92} r={40} fill="url(#sunCore)" />
+          {Array.from({ length: 12 }).map((_, i) => {
+            const a = (i / 12) * Math.PI * 2;
+            const x1 = 552 + Math.cos(a) * 50;
+            const y1 = 92 + Math.sin(a) * 50;
+            const x2 = 552 + Math.cos(a) * 62;
+            const y2 = 92 + Math.sin(a) * 62;
+            return (
+              <line
+                key={i}
+                x1={x1}
+                y1={y1}
+                x2={x2}
+                y2={y2}
+                stroke="var(--solar)"
+                strokeWidth={3}
+                strokeLinecap="round"
+                opacity={0.7}
+              />
+            );
+          })}
+        </g>
       </g>
 
-      {/* house */}
-      <g>
-        {/* side wall (depth) */}
-        <path d="M455,236 L500,214 L500,360 L455,360 Z" fill="var(--home-wall-2)" />
-        {/* front wall */}
-        <rect x={224} y={236} width={232} height={124} rx={6} fill="var(--home-wall)" />
+      <g className="scene-night">
+        <circle cx={552} cy={92} r={120} fill="url(#moonGlow)" />
+        <g className="soft-bob">
+          <circle cx={552} cy={92} r={38} fill="url(#moonCore)" />
+          {/* craters */}
+          <circle cx={544} cy={82} r={6} fill="#aeb9d6" opacity={0.7} />
+          <circle cx={562} cy={98} r={4.5} fill="#aeb9d6" opacity={0.6} />
+          <circle cx={548} cy={104} r={3.5} fill="#aeb9d6" opacity={0.5} />
+        </g>
+        {/* stars */}
+        {[
+          [90, 60], [160, 110], [250, 64], [340, 96], [420, 60],
+          [470, 130], [120, 150], [300, 130], [610, 200], [60, 210],
+        ].map(([cx, cy], i) => (
+          <g key={i} className="twinkle" style={{ animationDelay: `${i * 0.4}s` }}>
+            <circle cx={cx} cy={cy} r={i % 3 === 0 ? 2.2 : 1.4} fill="#eef2ff" />
+          </g>
+        ))}
+      </g>
 
-        {/* roof slab with solar panels */}
-        <path d="M214,196 L470,158 L492,196 L236,234 Z" fill="var(--home-roof)" />
+      {/* ===== turbines (behind) ===== */}
+      <Turbine x={92} hubY={150} baseY={372} scale={1.08} />
+      <Turbine x={584} hubY={206} baseY={372} scale={0.78} fast />
+
+      {/* ===== ground ===== */}
+      <path d="M0,372 Q320,346 640,372 L640,480 L0,480 Z" fill="url(#groundGrad)" />
+      {/* soil band (for the borehole cutaway feel) */}
+      <path
+        d="M0,408 Q320,388 640,408 L640,480 L0,480 Z"
+        fill="#000"
+        opacity={0.06}
+      />
+
+      {/* ===== geothermal: heat pump + loop into a borehole ===== */}
+      <g>
+        {/* heat-pump unit beside the house */}
+        <rect x={176} y={336} width={34} height={30} rx={4} fill="var(--home-wall-2)" stroke="var(--border-subtle)" />
+        <circle cx={193} cy={351} r={9} fill="var(--home-roof)" />
+        <circle cx={193} cy={351} r={3} fill="var(--energy-primary)" />
+        {/* loop */}
+        <g fill="none" strokeLinecap="round">
+          <path
+            d="M205,360 L240,360 L240,440 Q240,456 256,456 L286,456 Q302,456 302,440 L302,360"
+            stroke="var(--home-pipe)"
+            strokeWidth={9}
+          />
+          <path
+            d="M205,360 L240,360 L240,440 Q240,456 256,456 L286,456 Q302,456 302,440 L302,360"
+            stroke="var(--energy-primary)"
+            strokeWidth={3.5}
+            className="geo-flow"
+          />
+        </g>
+      </g>
+
+      {/* ===== house ===== */}
+      <g>
+        {/* contact shadow */}
+        <ellipse cx={350} cy={364} rx={150} ry={16} fill="#000" opacity={0.14} filter="url(#soft)" />
+
+        {/* side wall (depth) */}
+        <path d="M456,236 L502,213 L502,362 L456,362 Z" fill="var(--home-wall-2)" />
+        {/* front wall */}
+        <rect x={224} y={236} width={232} height={126} rx={5} fill="url(#wallGrad)" />
+        {/* foundation */}
+        <rect x={218} y={356} width={244} height={10} rx={2} fill="var(--home-roof)" opacity={0.85} />
+
+        {/* roof slab + fascia */}
+        <path d="M210,200 L472,160 L496,200 L238,240 Z" fill="var(--home-roof)" opacity={0.9} />
+        <path d="M214,196 L470,158 L492,196 L236,234 Z" fill="url(#roofGrad)" />
+        {/* solar array */}
         <g clipPath="url(#roofClip)">
-          <rect x={214} y={150} width={280} height={90} fill="url(#panel)" />
-          {/* panel grid */}
-          {Array.from({ length: PANEL_COLS - 1 }).map((_, i) => {
-            const t = (i + 1) / PANEL_COLS;
-            const xTop = 214 + t * (470 - 214);
-            const xBot = 236 + t * (492 - 236);
+          <rect x={210} y={150} width={290} height={92} fill="url(#panelGrad)" />
+          {/* cell grid */}
+          {Array.from({ length: 6 }).map((_, i) => {
+            const t = (i + 1) / 7;
             return (
               <line
                 key={`v${i}`}
-                x1={xTop}
-                y1={150}
-                x2={xBot}
-                y2={240}
+                x1={214 + t * 256}
+                y1={158}
+                x2={236 + t * 256}
+                y2={234}
                 stroke="var(--energy-dim)"
                 strokeWidth={1}
-                opacity={0.5}
+                opacity={0.45}
               />
             );
           })}
-          {Array.from({ length: PANEL_ROWS - 1 }).map((_, i) => {
-            const y = 196 + (i - (PANEL_ROWS - 2) / 2) * 16;
-            return (
-              <line
-                key={`h${i}`}
-                x1={210}
-                y1={y - 22}
-                x2={496}
-                y2={y - 22 + 8}
-                stroke="var(--energy-dim)"
-                strokeWidth={1}
-                opacity={0.35}
-              />
-            );
-          })}
+          {[176, 196, 216].map((y, i) => (
+            <line
+              key={`h${i}`}
+              x1={206}
+              y1={y - (216 - y) * 0}
+              x2={500}
+              y2={y - 18}
+              stroke="var(--energy-dim)"
+              strokeWidth={1}
+              opacity={0.3}
+            />
+          ))}
+          {/* glass reflection */}
+          <path d="M214,196 L470,158 L492,196 L236,234 Z" fill="#ffffff" opacity={0.06} />
           {/* moving shimmer */}
-          <rect
-            x={150}
-            y={150}
-            width={120}
-            height={120}
-            fill="url(#shimmer)"
-            className="solar-shimmer"
-            opacity={0.5}
-          />
+          <rect x={140} y={150} width={120} height={120} fill="url(#shimmer)" className="solar-shimmer" opacity={0.5} />
         </g>
 
-        {/* windows + door */}
-        <rect x={244} y={262} width={56} height={48} rx={4} fill="var(--home-glass)" stroke="var(--energy-primary)" strokeWidth={1.5} />
-        <rect x={314} y={262} width={56} height={48} rx={4} fill="var(--solar)" opacity={0.85} />
-        <rect x={384} y={262} width={50} height={98} rx={4} fill="var(--home-glass)" stroke="var(--energy-primary)" strokeWidth={1.5} />
+        {/* windows (frame + mullions + glass) */}
+        {[
+          { x: 242, y: 260, w: 58, h: 50 },
+          { x: 314, y: 260, w: 58, h: 50, lit: true },
+          { x: 386, y: 260, w: 50, h: 100 },
+        ].map((win, i) => (
+          <g key={i}>
+            <rect x={win.x - 2} y={win.y - 2} width={win.w + 4} height={win.h + 4} rx={4} fill="var(--home-wall-2)" />
+            <rect x={win.x} y={win.y} width={win.w} height={win.h} rx={3} fill={win.lit ? "var(--solar)" : "url(#glassGrad)"} opacity={win.lit ? 0.9 : 1} />
+            <line x1={win.x + win.w / 2} y1={win.y} x2={win.x + win.w / 2} y2={win.y + win.h} stroke="var(--home-wall-2)" strokeWidth={2} />
+            <line x1={win.x} y1={win.y + win.h / 2} x2={win.x + win.w} y2={win.y + win.h / 2} stroke="var(--home-wall-2)" strokeWidth={2} />
+          </g>
+        ))}
+
+        {/* night: warm interior glow in the windows */}
+        <g className="scene-night">
+          {[
+            [242, 260, 58, 50],
+            [386, 260, 50, 100],
+          ].map(([x, y, w, h], i) => (
+            <rect key={i} x={x} y={y} width={w} height={h} rx={3} fill="var(--solar)" opacity={0.55} />
+          ))}
+        </g>
       </g>
 
-      {/* foreground shrub */}
-      <g transform="translate(150 360)">
-        <path d="M0,12 C-14,6 -16,-12 0,-18 C16,-12 14,6 0,12 Z" fill="var(--savings)" opacity={0.9} />
-        <rect x={-1.5} y={10} width={3} height={10} fill="var(--home-pipe)" />
-      </g>
+      {/* ===== landscaping ===== */}
+      <Tree x={150} y={356} s={1.1} />
+      <Tree x={524} y={360} s={0.85} />
+      {/* grass tufts */}
+      {[60, 110, 430, 480, 600].map((x, i) => (
+        <path
+          key={i}
+          d={`M${x},372 q3,-12 6,0 q3,-12 6,0`}
+          stroke="var(--savings)"
+          strokeWidth={2}
+          fill="none"
+          opacity={0.7}
+        />
+      ))}
     </svg>
   );
 }

@@ -520,6 +520,17 @@
   animation: twinkle 3s ease-in-out infinite;
 }
 
+/* Day/night scene: sun shows in light, moon+stars in dark (sun fully removed). */
+.scene-night {
+  display: none;
+}
+[data-theme="dark"] .scene-day {
+  display: none;
+}
+[data-theme="dark"] .scene-night {
+  display: inline;
+}
+
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *,
