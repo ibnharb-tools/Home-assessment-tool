@@ -34,12 +34,64 @@ export interface ApplianceSelection {
   frequency: UsageFrequency;
 }
 
+/* ---------- 2D floor plan (generated from the questionnaire) ----------
+   Pure data: the generator (lib/floorplan.ts) produces this; the UI renders it
+   as a live 2D layout while the user answers. All coordinates are in grid units
+   (1 unit ≈ 1 m); the renderer scales to pixels. */
+
+export type RoomKind = keyof RoomCounts;
+export type RenewableSystem = "solar" | "wind" | "geothermal" | "battery";
+
+export interface PlacedRoom {
+  id: string;
+  kind: RoomKind;
+  label: string;
+  floor: number; // 0 = ground
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+export interface PlacedAppliance {
+  id: string;
+  applianceId: string;
+  label: string;
+  icon: string;
+  roomId: string;
+  floor: number;
+  x: number; // absolute grid coords (room.x + offset)
+  y: number;
+}
+
+export interface PlacedSystem {
+  id: string;
+  system: RenewableSystem;
+  label: string;
+  floor: number; // floor it attaches to (roof = top floor); outdoor systems use 0
+  x: number;
+  y: number;
+  outdoor: boolean;
+}
+
+export interface FloorPlan {
+  floors: number;
+  /** Footprint per floor in grid units. */
+  width: number;
+  height: number;
+  rooms: PlacedRoom[];
+  appliances: PlacedAppliance[];
+  systems: PlacedSystem[];
+}
+
 export interface QuestionnaireData {
   address: string;
 
   // Step 1 — Property basics
   propertyType?: PropertyType;
   rooms: RoomCounts;
+  /** Number of storeys/floors in the home (used for the 2D layout). */
+  floors: number;
   floorArea?: number;
   areaUnit: AreaUnit;
   occupants: number;

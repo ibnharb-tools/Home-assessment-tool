@@ -62,16 +62,25 @@ export function Step1Property() {
         </div>
       </Field>
 
-      <Field label="People living there">
-        <div className="sm:max-w-xs">
+      <div className="grid gap-8 sm:grid-cols-2">
+        <Field label="How many floors?">
+          <NumberStepper
+            value={data.floors}
+            min={1}
+            max={6}
+            onChange={(floors) => setData({ floors })}
+          />
+        </Field>
+
+        <Field label="People living there">
           <NumberStepper
             value={data.occupants}
             min={1}
             max={50}
             onChange={(occupants) => setData({ occupants })}
           />
-        </div>
-      </Field>
+        </Field>
+      </div>
 
       <Field
         label="Approximate floor area"

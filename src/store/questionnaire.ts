@@ -18,6 +18,7 @@ const defaultData: QuestionnaireData = {
   // Step 1
   propertyType: undefined,
   rooms: { bedrooms: 2, bathrooms: 1, living: 1, kitchens: 1, garages: 0, other: 0 },
+  floors: 1,
   floorArea: undefined,
   areaUnit: "sqft",
   occupants: 2,

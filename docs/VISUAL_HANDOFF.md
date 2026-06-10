@@ -34,6 +34,11 @@ plus the exact data contract the UI reads from.
 - **Logging** (`logging.ts` + `assessment_logs` table — run `supabase/schema.sql`).
 - **Typography** swapped to Playfair + Jost; **second hero CTA removed**.
 - Savings/emissions already recompute live on the technology toggle.
+- **2D floor-plan engine (functionality done):** `src/lib/floorplan.ts` →
+  `buildFloorPlan(data, systems?)` returns a structured `FloorPlan` (typed in
+  `src/types/index.ts`). Added a **"How many floors?"** input to Step 1. Verified:
+  rooms pack per floor, appliances place into the right rooms, systems place on
+  roof / in garage / outdoors. **Only the rendering is left** (item 0 below).
 
 > **Data contract:** the UI reads everything straight off `assessment` — including the new
 > `recommendation.unitPrice/options[]/citations[]` and `assessment.financing/grants/citations`.
@@ -42,6 +47,37 @@ plus the exact data contract the UI reads from.
 ---
 
 ## ⏳ Remaining — visual / layout (impeccable)
+
+### 0. ⭐ Live 2D floor-plan visualization (the marquee feature)
+**Reference look & feel:** https://floor-plan.ai/2d-floor-plan — a clean, top-down 2D
+floor plan with labelled rooms, wall lines, and icons.
+
+**The data is already generated for you** — no logic to write. Call:
+```ts
+import { buildFloorPlan } from "@/lib/floorplan";
+const plan = buildFloorPlan(data /* QuestionnaireData */, selectedSystems?);
+```
+`plan: FloorPlan` (see `src/types/index.ts`):
+- `floors` (number), `width`/`height` (footprint in grid units, ~1 unit = 1 m).
+- `rooms[]`: `{ id, kind, label, floor, x, y, w, h }` — draw each as a wall-outlined
+  rectangle with its label; group/show by `floor`.
+- `appliances[]`: `{ applianceId, label, icon, roomId, floor, x, y }` — `icon` is a
+  lucide name (use the existing `Icon` registry); drop it at `(x,y)` inside its room.
+- `systems[]`: `{ system, label, floor, x, y, outdoor }` — solar on the roof (top floor),
+  wind/geothermal outdoors, battery in the garage.
+
+**Behaviour to build:**
+- Render it **live in the questionnaire** (right side / sticky panel) and have it **build up
+  as the user answers**: rooms appear/animate in as room counts change (Step 1), the floors
+  control adds storeys (a small floor switcher or stacked view), appliance icons pop into
+  rooms as they're selected (Step 3). Derive the plan from the live store with
+  `const plan = useMemo(() => buildFloorPlan(data), [data])`.
+- **Carry it onto the results page** ("your home"), and feed the **selected technologies** in
+  so solar/wind/geo/battery appear on the plan (`buildFloorPlan(data, [...selected])`), updating
+  live with the toggle. This is also the home for the "Edit your home" panel.
+- Style it to the floor-plan.ai reference, themed to the site (teal lines on warm paper /
+  warm-dark). Animate with transform/opacity; respect `prefers-reduced-motion`.
+- Coordinates are grid units — scale to a responsive pixel box; center the footprint.
 
 ### 1. Scroll lag — diagnose then fix
 Profile a scroll (DevTools Performance). Likely causes, in order:
