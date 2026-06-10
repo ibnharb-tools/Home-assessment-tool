@@ -54,6 +54,42 @@ export function Step4Goals() {
           ))}
         </div>
       </Field>
+
+      <Field
+        label="Financing preference"
+        hint="Turn this on to see only Shariah-compliant (riba-free) financing options in your results."
+      >
+        <button
+          type="button"
+          role="switch"
+          aria-checked={Boolean(data.shariahCompliant)}
+          onClick={() => setData({ shariahCompliant: !data.shariahCompliant })}
+          className={cn(
+            "flex w-full max-w-md items-center justify-between gap-4 rounded-card border p-4 text-left transition-colors",
+            "focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-energy",
+            data.shariahCompliant
+              ? "border-energy-dim bg-surface"
+              : "border-line bg-elevated hover:border-energy-dim"
+          )}
+        >
+          <span className="text-sm font-medium text-ink">
+            Shariah-compliant financing only
+          </span>
+          <span
+            className={cn(
+              "relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors",
+              data.shariahCompliant ? "bg-energy" : "bg-surface"
+            )}
+          >
+            <span
+              className={cn(
+                "inline-block h-5 w-5 transform rounded-full bg-elevated shadow-[var(--shadow-whisper)] transition-transform",
+                data.shariahCompliant ? "translate-x-5" : "translate-x-0.5"
+              )}
+            />
+          </span>
+        </button>
+      </Field>
     </div>
   );
 }

@@ -11,6 +11,9 @@ import { AuthModal } from "@/components/auth/AuthModal";
 import { EnergyProfile } from "./EnergyProfile";
 import { Viability } from "./Viability";
 import { Recommendations } from "./Recommendations";
+import { CostTable } from "./CostTable";
+import { Financing } from "./Financing";
+import { Sources } from "./Sources";
 import { PhotoInsights } from "./PhotoInsights";
 import { SavingsCharts } from "./SavingsCharts";
 import { FinancialBreakdown } from "./FinancialBreakdown";
@@ -177,11 +180,18 @@ export function ResultsDashboard({
             selected={selected}
             onToggle={toggleTech}
           />
+          <CostTable
+            assessment={assessment}
+            selected={selected}
+            questionnaireData={questionnaireData}
+          />
           <PhotoInsights assessment={assessment} photos={photos} />
           <SavingsCharts assessment={effective} />
           <FinancialBreakdown assessment={effective} />
           <EnvironmentalImpact assessment={effective} />
+          <Financing assessment={effective} />
           <NextSteps assessment={effective} />
+          <Sources assessment={effective} />
           {!saved && !dismissed && (
             <SaveCTA
               onCreateAccount={() => setShowSave(true)}

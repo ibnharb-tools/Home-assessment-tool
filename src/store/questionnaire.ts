@@ -34,6 +34,7 @@ const defaultData: QuestionnaireData = {
   goals: [],
   budget: undefined,
   timeframe: undefined,
+  shariahCompliant: false,
   // Step 5
   photos: [],
 };
