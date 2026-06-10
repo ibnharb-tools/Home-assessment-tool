@@ -46,7 +46,7 @@ export function AddressEntry({ className }: { className?: string }) {
       >
         <div
           className={cn(
-            "flex flex-1 items-center gap-3 rounded-btn border bg-elevated px-4",
+            "flex min-w-0 flex-1 items-center gap-3 rounded-btn border bg-elevated px-4",
             "min-h-[52px] transition-colors duration-150",
             "focus-within:outline-none focus-within:border-energy",
             error ? "border-danger" : "border-line"
