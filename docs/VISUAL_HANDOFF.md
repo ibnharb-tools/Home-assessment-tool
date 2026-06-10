@@ -29,8 +29,13 @@ plus the exact data contract the UI reads from.
     Energy Required / Energy Produced), product options as sub-rows, budget-filtered, totals, source links.
   - `Financing.tsx` — financing options with a **Halal** badge + grant links.
   - `Sources.tsx` — collapsible "Sources and equations" listing every citation.
+  - `NextSteps.tsx` — **expandable accordion with real working links** (CanREA installer
+    directory, Canada Greener Homes initiative/loan, plus the assessment's own grant/financing URLs).
 - **Shariah toggle** — on the questionnaire Goals step, store-backed, end-to-end with the
   engine (ON → riba-free financing only). Verified.
+- **Retrieval corpus expanded to 5 sources** (report, Masters textbook, GSHP design, O&M
+  decision support, PV-geometry article) via the committed `scripts/extract-corpus.mjs`
+  (`node scripts/extract-corpus.mjs` to rebuild). Methodology registry cites them.
 - **Logging** (`logging.ts` + `assessment_logs` table — run `supabase/schema.sql`).
 - **Typography** swapped to Playfair + Jost; **second hero CTA removed**.
 - Savings/emissions already recompute live on the technology toggle.
@@ -120,10 +125,8 @@ Profile a scroll (DevTools Performance). Likely causes, in order:
 
 ### 6. Results page
 - Graph-paper background (item 3).
-- **`NextSteps.tsx`:** make each item an expandable accordion with real working links
-  (supplier lists, grant program pages — `assessment.grants` already carries URLs).
-- The cost table, financing, citations sections are built; restyle to match the new visual
-  language as needed.
+- The cost table, financing, citations, and the **NextSteps accordion (with real links)** are
+  built and wired; restyle to match the new visual language as needed.
 
 ### 7. Copy sweep (site-wide)
 - Remove AI-sounding phrasing and **all em dashes (—)** across `src/**`. Replace with periods,

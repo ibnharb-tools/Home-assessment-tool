@@ -1,45 +1,79 @@
 "use client";
 
-import { HardHat, ClipboardList, Landmark, ArrowUpRight, type LucideIcon } from "lucide-react";
+import { useState } from "react";
+import {
+  HardHat,
+  ClipboardList,
+  Landmark,
+  ChevronDown,
+  ExternalLink,
+  type LucideIcon,
+} from "lucide-react";
 import type { Assessment } from "@/types";
 import { Card } from "@/components/ui";
 import { Reveal } from "@/components/Reveal";
-import { formatCurrency } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
+
+interface Link {
+  label: string;
+  url: string;
+}
+interface Step {
+  Icon: LucideIcon;
+  accent: string;
+  title: string;
+  detail: string;
+  links: Link[];
+}
+
+const dedupe = (links: Link[]) => {
+  const seen = new Set<string>();
+  return links.filter((l) => l.url && !seen.has(l.url) && seen.add(l.url));
+};
 
 export function NextSteps({ assessment }: { assessment: Assessment }) {
   const { financial } = assessment;
+  const [open, setOpen] = useState<number>(0);
 
-  const steps: StepDef[] = [
+  const grantLinks = (assessment.grants ?? [])
+    .filter((g) => g.url)
+    .map((g) => ({ label: g.label, url: g.url as string }));
+  const financeLinks = (assessment.financing ?? [])
+    .filter((f) => f.url)
+    .map((f) => ({ label: `${f.name} — ${f.provider}`, url: f.url as string }));
+
+  const steps: Step[] = [
     {
-      step: 1,
       Icon: HardHat,
-      accentText: "text-energy",
+      accent: "text-energy",
       title: "Get installer quotes",
       detail:
-        "The modelled costs use regional benchmarks. A certified local installer will confirm sizing and give a firm quote for your specific roof, electrical panel, and permit requirements.",
-      cta: "Find a certified installer",
-      // Replace with a provincial installer directory once integrated
-      href: "#",
+        "The modelled costs use regional benchmarks. A certified local installer confirms sizing and gives a firm quote for your roof, electrical panel, and permits. Get two or three quotes.",
+      links: dedupe([
+        { label: "CanREA member directory (installers & suppliers)", url: "https://renewablesassociation.ca/membership/our-members/" },
+        { label: "Canada Greener Homes — book an energy advisor", url: "https://natural-resources.canada.ca/energy-efficiency/homes/canada-greener-homes-initiative" },
+      ]),
     },
     {
-      step: 2,
       Icon: ClipboardList,
-      accentText: "text-savings",
+      accent: "text-savings",
       title: "Apply for rebates before installation",
-      detail: `${formatCurrency(financial.estimatedRebates)} in incentives are included in this estimate. Most federal and provincial programs require a pre-approval application before any work begins — missing this step forfeits the incentive.`,
-      cta: "View incentive programs",
-      // Replace with Canada Greener Homes or provincial portal URL once integrated
-      href: "#",
+      detail: `${formatCurrency(financial.estimatedRebates)} in incentives are included in this estimate. Most programs require pre-approval before any work begins; applying after install forfeits the incentive.`,
+      links: dedupe([
+        ...grantLinks,
+        { label: "Canada Greener Homes Initiative", url: "https://natural-resources.canada.ca/energy-efficiency/homes/canada-greener-homes-initiative" },
+        { label: "Find programs by province (NRCan)", url: "https://natural-resources.canada.ca/energy-efficiency/homes" },
+      ]),
     },
     {
-      step: 3,
       Icon: Landmark,
-      accentText: "text-solar",
+      accent: "text-solar",
       title: "Review your financing options",
-      detail: `Your net cost of ${formatCurrency(financial.netCost)} can be covered through government low-interest loans or utility payment plans, reducing the day-one cash requirement significantly.`,
-      cta: "Explore financing programs",
-      // Replace with Canada Greener Homes Loan or provincial green financing URL once integrated
-      href: "#",
+      detail: `Your net cost of ${formatCurrency(financial.netCost)} can be spread through low- or no-interest programs, reducing the day-one cash you need.`,
+      links: dedupe([
+        ...financeLinks,
+        { label: "Canada Greener Homes Loan (interest-free)", url: "https://natural-resources.canada.ca/energy-efficiency/homes/canada-greener-homes-initiative" },
+      ]),
     },
   ];
 
@@ -55,56 +89,55 @@ export function NextSteps({ assessment }: { assessment: Assessment }) {
           require pre-approval before installation begins.
         </p>
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-3">
-          {steps.map((s) => (
-            <StepTile key={s.step} {...s} />
-          ))}
+        <div className="mt-8 divide-y divide-line border-y border-line">
+          {steps.map((s, i) => {
+            const isOpen = open === i;
+            return (
+              <div key={i}>
+                <button
+                  type="button"
+                  aria-expanded={isOpen}
+                  onClick={() => setOpen(isOpen ? -1 : i)}
+                  className="flex w-full items-center gap-4 py-4 text-left focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-energy"
+                >
+                  <span className={cn("inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-btn bg-surface", s.accent)}>
+                    <s.Icon size={18} aria-hidden />
+                  </span>
+                  <span className="flex-1 font-semibold text-ink">
+                    <span className="mr-2 font-mono text-ink-faint">{i + 1}.</span>
+                    {s.title}
+                  </span>
+                  <ChevronDown
+                    size={18}
+                    className={cn("shrink-0 text-ink-faint transition-transform", isOpen && "rotate-180")}
+                  />
+                </button>
+
+                {isOpen && (
+                  <div className="pb-5 pl-14">
+                    <p className="text-sm leading-relaxed text-ink-soft">{s.detail}</p>
+                    <ul className="mt-3 space-y-2">
+                      {s.links.map((l, j) => (
+                        <li key={j}>
+                          <a
+                            href={l.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 text-sm font-medium text-energy hover:underline"
+                          >
+                            {l.label}
+                            <ExternalLink size={13} aria-hidden />
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </Card>
     </Reveal>
-  );
-}
-
-interface StepDef {
-  step: number;
-  Icon: LucideIcon;
-  accentText: string;
-  title: string;
-  detail: string;
-  cta: string;
-  href: string;
-}
-
-function StepTile({ step, Icon, accentText, title, detail, cta, href }: StepDef) {
-  return (
-    <div className="flex flex-col gap-4 rounded-card border border-line bg-surface/40 p-5 transition-colors hover:bg-surface/80">
-      <div className="flex items-start justify-between">
-        <span
-          className={`inline-flex h-10 w-10 items-center justify-center rounded-btn bg-elevated ${accentText}`}
-        >
-          <Icon size={18} aria-hidden="true" />
-        </span>
-        <span
-          className={`select-none font-mono text-3xl font-bold opacity-20 ${accentText}`}
-          aria-hidden="true"
-        >
-          {step}
-        </span>
-      </div>
-
-      <div className="flex-1">
-        <h3 className="font-semibold text-ink">{title}</h3>
-        <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">{detail}</p>
-      </div>
-
-      <a
-        href={href}
-        onClick={href === "#" ? (e) => e.preventDefault() : undefined}
-        className={`mt-auto inline-flex items-center gap-1.5 text-sm font-medium transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-energy ${accentText}`}
-      >
-        {cta}
-        <ArrowUpRight size={13} aria-hidden="true" />
-      </a>
-    </div>
   );
 }

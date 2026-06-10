@@ -109,3 +109,21 @@ support future expansion (hydro, detailed storage) and validation.
 > A few uploads (e.g. `Sach_Tieng_Anh.pdf`, various `preview…`/`dokumen.pub…` excerpts) appear to
 > be previews or unrelated and aren't tied to the methodology — kept for completeness.
 
+## Retrieval corpus (what the AI learns from)
+
+`src/lib/corpus.json` is the searchable corpus the assessment engine retrieves from at request
+time (`src/lib/retrieval.ts` → top passages injected into the prompt with `(title, page)`
+citations). It currently spans **5 sources**:
+
+- `Harb_MECH4692_Final_Report.pdf` — the user's RED-model report (preferred source of truth)
+- `Renewable and Efficient Electric Power Systems.pdf` — Masters textbook
+- `Design of Ground-Source Heat Pump Systems.pdf` — Kavanaugh & Rafferty (geothermal sizing/COP)
+- `Operation and Maintenance Decision Support.pdf` — O&M / maintenance cost basis
+- `Pacheco-Torres_2014_Building_Geometry_PV_Energy.pdf` — Pacheco-Torres et al. (2014),
+  *Energy Efficiency*: building geometry vs. PV generation and energy demand
+
+**Rebuild the corpus** after adding/removing PDFs: list the file in `SOURCES` inside
+`scripts/extract-corpus.mjs`, then `node scripts/extract-corpus.mjs` and commit the updated
+`src/lib/corpus.json`. The methodology registry (`src/lib/methodology.ts`) also cites the
+GSHP, O&M, and PV-geometry sources for the matching calculations.
+

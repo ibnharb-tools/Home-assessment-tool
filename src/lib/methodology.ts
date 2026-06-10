@@ -82,6 +82,32 @@ export const METHODOLOGY: MethodEquation[] = [
     citation: "REPORT §5.3 Biomass Analysis",
   },
   {
+    id: "gshp_cop",
+    label: "Ground-source heat pump performance & sizing",
+    equation: "Q_delivered = COP × W_input;  loop length sized to ground load",
+    variables:
+      "COP = coefficient of performance (≈3–5 for GSHP); W_input = electrical input; loop sized from building load and ground thermal conductivity.",
+    citation:
+      "Kavanaugh & Rafferty, Design of Ground-Source Heat Pump Systems (docs/)",
+  },
+  {
+    id: "maintenance",
+    label: "Maintenance / O&M cost basis",
+    equation: "O&M_annual ≈ rate × capital (per technology)",
+    variables:
+      "Use technology-specific O&M rates; prefer real maintenance figures from supplier data when available.",
+    citation: "Operation and Maintenance Decision Support (docs/)",
+  },
+  {
+    id: "pv_geometry",
+    label: "Building geometry & PV optimization",
+    equation: "Optimize roof orientation/tilt and form factor to maximize E_pv / energy demand",
+    variables:
+      "Building morphology (detached / semidetached / multidwelling) affects PV generation potential and demand per built area.",
+    citation:
+      "Pacheco-Torres et al. (2014), Energy Efficiency — building geometry & PV (docs/)",
+  },
+  {
     id: "balance",
     label: "Power & heat balance",
     equation: "E_surplus(month) = E_produced − E_consumed",
