@@ -16,8 +16,8 @@ plus the exact data contract the UI reads from.
 
 ## ✅ Done and on the branch (backend + data UI)
 - **Grounded engine:** `src/lib/methodology.ts` (cited RED-model + textbook equations),
-  `src/lib/retrieval.ts` + `src/lib/corpus.json` (keyword search over your report + the
-  textbook, 264 chunks), injected into every prompt with `(title, page)` citations.
+  `src/lib/retrieval.ts` + `src/lib/corpus.json` (keyword search over 5 sources, 504 chunks),
+  injected into every prompt with `(title, page)` citations.
 - **Live pricing/grants:** Anthropic `web_search`/`web_fetch` server tools wired in
   `src/lib/anthropic.ts` (budget-filtered, cited). Runs on Vercel/local with a key.
 - **Data model** (`src/types/index.ts`): Table III columns on `Recommendation`
