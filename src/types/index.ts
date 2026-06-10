@@ -59,6 +59,8 @@ export interface QuestionnaireData {
   goals: string[];
   budget?: string;
   timeframe?: string;
+  /** When true, only Shariah-compliant (riba-free) financing is recommended. */
+  shariahCompliant?: boolean;
 
   // Step 5 — Photos (optional). Stored as downscaled JPEG data URLs for MVP.
   photos: string[];
@@ -94,6 +96,29 @@ export interface LocationData {
   climateSummary: string;
 }
 
+/** A cited fact — links a number or claim back to its source. */
+export interface Citation {
+  /** What the citation supports, e.g. "PV annual production" or "panel unit price". */
+  label: string;
+  /** Document + equation/section, OR a supplier/grant name. */
+  source: string;
+  /** URL for live pricing/grant sources (omitted for document equations). */
+  url?: string;
+}
+
+/** A purchasable product option for a technology (live or curated pricing). */
+export interface ProductOption {
+  name: string;
+  supplier: string;
+  unitPrice: number;
+  installationCost: number;
+  maintenanceCostPerYear: number;
+  energyRequiredKwh: number; // operating energy the unit consumes
+  energyProducedKwh: number; // energy the unit produces per year
+  url?: string;
+  sourceCitation?: string;
+}
+
 export interface Recommendation {
   technology: string;
   recommended: boolean;
@@ -104,6 +129,26 @@ export interface Recommendation {
   coveragePercentage: number;
   explanation: string;
   placement: string;
+  // Report Table III columns
+  unitPrice?: number;
+  installationCost?: number;
+  maintenanceCostPerYear?: number;
+  energyRequiredKwh?: number;
+  energyProducedKwh?: number;
+  /** Real product/supplier options (budget-filtered, live or curated). */
+  options?: ProductOption[];
+  /** Calculation + price citations specific to this technology. */
+  citations?: Citation[];
+}
+
+/** A financing option; Shariah-compliant ones are riba-free structures. */
+export interface FinancingOption {
+  name: string;
+  provider: string;
+  type: string; // e.g. "Green loan", "Murabaha", "Ijara", "Grant"
+  shariahCompliant: boolean;
+  summary: string;
+  url?: string;
 }
 
 export interface FinancialSummary {
@@ -129,6 +174,12 @@ export interface Assessment {
   financial: FinancialSummary;
   environmental: EnvironmentalImpact;
   photoInsights: string | null;
+  /** Financing options, filtered to Shariah-compliant when the user opts in. */
+  financing?: FinancingOption[];
+  /** Grant/rebate programs found (with source URLs). */
+  grants?: Citation[];
+  /** Methodology citations used across the assessment. */
+  citations?: Citation[];
   /** Resolved coordinates + meta, attached by the API route. */
   meta?: {
     address: string;

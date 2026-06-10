@@ -5,6 +5,7 @@ import { getClimateData } from "@/lib/climate";
 import { getResources, type ResourceBundle } from "@/lib/resources";
 import { buildAssessment, hasAnthropicKey } from "@/lib/anthropic";
 import { buildMockAssessment } from "@/lib/mock";
+import { logAssessment } from "@/lib/logging";
 
 // The AI call can take a while; allow up to 60s on platforms that honor this.
 export const maxDuration = 60;
@@ -83,13 +84,16 @@ export async function POST(req: Request) {
         ...assessment,
         meta: { ...meta, mock: false },
       };
+      await logAssessment(data, withMeta);
       return NextResponse.json({ assessment: withMeta, warning: locationWarning });
     } catch (err) {
       // Fall back to the mock so the demo never hard-fails; surface a note.
       console.error("AI assessment failed, falling back to mock:", err);
       const mock = buildMockAssessment(data, resolved, climate, resources);
+      const withMeta: Assessment = { ...mock, meta: { ...meta, mock: true } };
+      await logAssessment(data, withMeta);
       return NextResponse.json({
-        assessment: { ...mock, meta: { ...meta, mock: true } },
+        assessment: withMeta,
         warning:
           locationWarning ??
           "The AI engine was unavailable, so this is a sample assessment based on your inputs.",
@@ -99,8 +103,7 @@ export async function POST(req: Request) {
 
   // No key configured — deterministic mock.
   const mock = buildMockAssessment(data, resolved, climate, resources);
-  return NextResponse.json({
-    assessment: { ...mock, meta: { ...meta, mock: true } },
-    warning: locationWarning,
-  });
+  const withMeta: Assessment = { ...mock, meta: { ...meta, mock: true } };
+  await logAssessment(data, withMeta);
+  return NextResponse.json({ assessment: withMeta, warning: locationWarning });
 }

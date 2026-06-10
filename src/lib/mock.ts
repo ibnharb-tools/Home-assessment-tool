@@ -266,6 +266,82 @@ export function buildMockAssessment(
     twentyFiveYearCo2Tonnes: Math.round(annualCo2AvoidedTonnes * 25 * 10) / 10,
   };
 
+  // ---- Report Table III columns + citations (mock; live data fills these
+  //      when an Anthropic key + network are available) ----
+  const methodCite = (label: string, source: string) => ({ label, source });
+  const techCitations: Record<string, { label: string; source: string }[]> = {
+    "Solar PV": [
+      methodCite("Annual production", "REPORT §5.1 Solar Panel Analysis; E_pv = n·P·H·PR"),
+      methodCite("Payback", "REPORT §6; Payback = NetCost / AnnualSavings"),
+    ],
+    Wind: [
+      methodCite("Wind energy", "MASTERS wind chapter; P = ½ρAv³·Cp; Weibull AEP"),
+    ],
+    Geothermal: [methodCite("Heating offset", "REPORT §5.3; MASTERS heat-pump COP")],
+    "Battery Storage": [methodCite("Resilience", "MASTERS storage; DOE/EPRI handbook")],
+  };
+  const augmented = recommendations.map((r) => ({
+    ...r,
+    unitPrice: Math.round(r.estimatedCost * 0.72),
+    installationCost: Math.round(r.estimatedCost * 0.28),
+    maintenanceCostPerYear:
+      r.technology === "Battery Storage" ? 120 : Math.round(r.estimatedCost * 0.01),
+    energyRequiredKwh:
+      r.technology === "Geothermal" ? Math.round(heatingKwh * 0.3) : 0,
+    energyProducedKwh: r.estimatedAnnualProduction || 0,
+    citations: techCitations[r.technology] ?? [],
+  }));
+
+  const financing = data.shariahCompliant
+    ? [
+        {
+          name: "Diminishing Musharaka green facility",
+          provider: "Islamic finance provider (sample)",
+          type: "Diminishing Musharaka",
+          shariahCompliant: true,
+          summary:
+            "Co-ownership structure with no interest; you buy out the provider's share over time. Riba-free.",
+        },
+        {
+          name: "Canada Greener Homes Grant",
+          provider: "Government of Canada",
+          type: "Grant",
+          shariahCompliant: true,
+          summary: "Up to $5,000 toward eligible retrofits. A grant carries no riba.",
+          url: "https://natural-resources.canada.ca/energy-efficiency/homes/canada-greener-homes-initiative",
+        },
+      ]
+    : [
+        {
+          name: "Canada Greener Homes Loan",
+          provider: "Government of Canada",
+          type: "Green loan",
+          shariahCompliant: false,
+          summary: "Interest-free loan up to $40,000 for eligible retrofits (10-year term).",
+          url: "https://natural-resources.canada.ca/energy-efficiency/homes/canada-greener-homes-initiative",
+        },
+        {
+          name: "Canada Greener Homes Grant",
+          provider: "Government of Canada",
+          type: "Grant",
+          shariahCompliant: true,
+          summary: "Up to $5,000 toward eligible retrofits.",
+          url: "https://natural-resources.canada.ca/energy-efficiency/homes/canada-greener-homes-initiative",
+        },
+      ];
+
+  const grants = [
+    {
+      label: "Canada Greener Homes Grant (up to $5,000)",
+      source: "Natural Resources Canada",
+      url: "https://natural-resources.canada.ca/energy-efficiency/homes/canada-greener-homes-initiative",
+    },
+  ];
+  const citations = [
+    { label: "Renewable Energy Ratio & demand", source: "REPORT §3 (RED model)" },
+    { label: "Cost & payback basis", source: "REPORT §6; docs/lazards-lcoeplus-june-2025.pdf" },
+  ];
+
   return {
     energyProfile: {
       estimatedDailyKwh,
@@ -283,7 +359,10 @@ export function buildMockAssessment(
       geothermalViability: geothermal,
       climateSummary: `Location at ${geo.latitude.toFixed(2)}, ${geo.longitude.toFixed(2)} has ${sRating.toLowerCase()} solar potential${wind ? ` and ${wRating.toLowerCase()} wind resource` : ""}. Climate data sourced from ${climate.source === "nasa-power" ? "NASA POWER" : climate.source === "open-meteo" ? "Open-Meteo" : "regional estimates"}.`,
     },
-    recommendations,
+    recommendations: augmented,
+    financing,
+    grants,
+    citations,
     financial: {
       totalSystemCost,
       estimatedRebates,

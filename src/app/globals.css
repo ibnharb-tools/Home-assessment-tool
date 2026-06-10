@@ -17,8 +17,8 @@
 :root,
 [data-theme="light"] {
   /* Type families (loaded via Fontshare link in layout.tsx) */
-  --font-sora: "Clash Display", ui-sans-serif, system-ui, sans-serif;
-  --font-outfit: "General Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sora: var(--font-playfair), Georgia, "Times New Roman", serif;
+  --font-outfit: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
 
   /* Foundation - warm paper, not cold blue-grey */
   --bg-deepest: #ffffff;
@@ -97,8 +97,8 @@
 
 /* ---------- DARK THEME (toggle) — warm premium near-black ---------- */
 [data-theme="dark"] {
-  --font-sora: "Clash Display", ui-sans-serif, system-ui, sans-serif;
-  --font-outfit: "General Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sora: var(--font-playfair), Georgia, "Times New Roman", serif;
+  --font-outfit: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
 
   /* Foundation - warm espresso-black, not cold navy */
   --bg-deepest: #0c0a08;

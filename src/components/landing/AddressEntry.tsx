@@ -78,7 +78,8 @@ export function AddressEntry({ className }: { className?: string }) {
       <div className="mt-3 flex min-h-[1.25rem] items-center gap-2 text-sm">
         {error ? (
           <span className="text-danger">
-            Enter an address, postal code, or coordinates like "45.42, -75.70".
+            Enter an address, postal code, or coordinates like
+            {" "}&ldquo;45.42, -75.70&rdquo;.
           </span>
         ) : (
           <span className="inline-flex items-center gap-2 text-ink-faint">

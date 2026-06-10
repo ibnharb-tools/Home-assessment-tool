@@ -2,7 +2,6 @@ import { Nav } from "@/components/landing/Nav";
 import { Hero } from "@/components/landing/Hero";
 import { Capabilities } from "@/components/landing/Capabilities";
 import { VisualPreview } from "@/components/landing/VisualPreview";
-import { ClosingCTA } from "@/components/landing/ClosingCTA";
 import { Footer } from "@/components/landing/Footer";
 
 export default function LandingPage() {
@@ -13,7 +12,6 @@ export default function LandingPage() {
         <Hero />
         <Capabilities />
         <VisualPreview />
-        <ClosingCTA />
       </main>
       <Footer />
     </>

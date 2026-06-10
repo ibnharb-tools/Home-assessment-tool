@@ -5,6 +5,8 @@ import type { ClimateData } from "./climate";
 import { APPLIANCES } from "./questionnaire-options";
 import { totalRooms } from "./utils";
 import type { ResourceBundle } from "./resources";
+import { methodologyForPrompt } from "./methodology";
+import { retrievePassages, formatPassagesForPrompt } from "./retrieval";
 
 /**
  * AI assessment engine.
@@ -68,7 +70,8 @@ function buildPrompt(
   data: QuestionnaireData,
   geo: GeocodeResult,
   climate: ClimateData,
-  resources?: ResourceBundle
+  resources: ResourceBundle | undefined,
+  passages: string
 ): string {
   const solar =
     climate.solarIrradiance !== null
@@ -118,10 +121,30 @@ RATING THRESHOLDS — base ratings strictly on the climate values above:
 - Wind @50m (m/s): >6.0 Excellent; 5.0–6.0 Good; 4.0–5.0 Moderate; <4.0 Poor (for small wind).
 - Geothermal viability: generally High where heating/cooling demand is significant and lot space exists; Moderate otherwise; Low for apartments/condos.
 
+METHODOLOGY — you MUST ground every calculation in these cited equations (do not invent new ones). Cite the equation for each figure in the citations arrays.
+${methodologyForPrompt()}
+
+RELEVANT SOURCE PASSAGES (retrieved from the user's report + textbook; cite as needed):
+${passages || "(none retrieved)"}
+
+LIVE DATA — use web_search and web_fetch to find:
+- Real supplier product options + prices (unit price, installation, annual maintenance) for each recommended technology, available in or shippable to the user's region. Populate each recommendation's "options" array and cite the supplier URL.
+- Current government/utility rebate & grant programs for the user's location. Populate "grants" with name + url.
+- Filter all product options to the user's budget (${data.budget ?? "unspecified"}).
+If a search fails, fall back to reasonable estimates and say so in the citation.
+
+FINANCING
+- Provide a "financing" array of real options (green loans, grants, on-bill financing).
+${
+  data.shariahCompliant
+    ? '- The user requires SHARIAH-COMPLIANT (riba/interest-free) financing ONLY. Include only riba-free structures (e.g. Murabaha, Ijara, diminishing Musharaka, Qard Hasan, or grants). Set shariahCompliant=true on each. Do NOT include conventional interest-bearing loans.'
+    : '- Include conventional and, where available, Shariah-compliant options; mark each with shariahCompliant true/false.'
+}
+
 FINANCIAL ASSUMPTIONS
-- Apply Canadian federal rebate assumptions: Canada Greener Homes Grant up to CAD $5,000; note that rebates vary by province.
+- Apply Canadian federal rebate assumptions: Canada Greener Homes Grant up to CAD $5,000; note that rebates vary by province. Prefer LIVE grant data when found.
 - Use reasonable, clearly-estimated figures (CAD). Do not be falsely precise.
-- If the user did not provide daily usage, estimate annual kWh from the appliance list, occupants, and floor area.
+- If the user did not provide daily usage, estimate annual kWh from the appliance list, occupants, and floor area, per the demand equation.
 
 OUTPUT
 Return ONLY a single valid JSON object (no markdown, no commentary, no code fences) with EXACTLY this shape:
@@ -152,7 +175,14 @@ Return ONLY a single valid JSON object (no markdown, no commentary, no code fenc
       "estimatedAnnualProduction": number,
       "coveragePercentage": number,
       "explanation": string,
-      "placement": string
+      "placement": string,
+      "unitPrice": number,
+      "installationCost": number,
+      "maintenanceCostPerYear": number,
+      "energyRequiredKwh": number,
+      "energyProducedKwh": number,
+      "options": [{ "name": string, "supplier": string, "unitPrice": number, "installationCost": number, "maintenanceCostPerYear": number, "energyRequiredKwh": number, "energyProducedKwh": number, "url": string, "sourceCitation": string }],
+      "citations": [{ "label": string, "source": string, "url": string }]
     }
   ],
   "financial": {
@@ -169,9 +199,12 @@ Return ONLY a single valid JSON object (no markdown, no commentary, no code fenc
     "kmDrivingEquivalent": number,
     "twentyFiveYearCo2Tonnes": number
   },
-  "photoInsights": string or null
+  "photoInsights": string or null,
+  "financing": [{ "name": string, "provider": string, "type": string, "shariahCompliant": boolean, "summary": string, "url": string }],
+  "grants": [{ "label": string, "source": string, "url": string }],
+  "citations": [{ "label": string, "source": string, "url": string }]
 }
-Include a recommendation entry for each of: Solar PV, Wind, Geothermal, Battery Storage (recommended true/false as appropriate). The breakdown should cover Heating, Cooling, Appliances, Water Heating, Lighting, Other and sum to ~100%.`;
+Include a recommendation entry for each of: Solar PV, Wind, Geothermal, Battery Storage (recommended true/false as appropriate). The breakdown should cover Heating, Cooling, Appliances, Water Heating, Lighting, Other and sum to ~100%. Every numeric figure must trace to a methodology equation (in citations) or a live source URL.`;
 }
 
 /** Build Claude vision image blocks from uploaded data URLs (max 6). */
@@ -218,7 +251,18 @@ export async function buildAssessment(
 ): Promise<Assessment> {
   const client = new Anthropic(); // reads ANTHROPIC_API_KEY from env
 
-  const promptText = buildPrompt(data, geo, climate, resources);
+  // Keyword-retrieve grounding passages from the report + textbook.
+  const query = [
+    data.propertyType,
+    "solar PV wind geothermal biomass battery payback RER GHG capacity factor",
+    data.goals.join(" "),
+    data.appliances.map((a) => a.id).join(" "),
+  ]
+    .filter(Boolean)
+    .join(" ");
+  const passages = formatPassagesForPrompt(retrievePassages(query, 5));
+
+  const promptText = buildPrompt(data, geo, climate, resources, passages);
   const imageBlocks = buildImageBlocks(data.photos);
 
   const content: Anthropic.ContentBlockParam[] = [
@@ -232,19 +276,42 @@ export async function buildAssessment(
     content.push(...imageBlocks);
   }
 
-  const response = await client.messages.create({
+  // Live data: Anthropic server-side web tools for real supplier pricing +
+  // grant programs. They run server-side; on long tool loops the API returns
+  // stop_reason "pause_turn", which we resume until it completes.
+  const tools = [
+    { type: "web_search_20260209", name: "web_search" },
+    { type: "web_fetch_20260209", name: "web_fetch" },
+  ] as unknown as Anthropic.ToolUnion[];
+
+  const messages: Anthropic.MessageParam[] = [{ role: "user", content }];
+  let response = await client.messages.create({
     model: MODEL,
-    max_tokens: 4096,
+    max_tokens: 6000,
     system:
-      "You are a precise energy systems engineer. You respond with a single valid JSON object only — no prose, no markdown fences.",
-    messages: [{ role: "user", content }],
+      "You are a precise energy systems engineer. Ground every number in the provided methodology equations or a live source you fetched. After any web searches, your FINAL message must be a single valid JSON object only.",
+    tools,
+    messages,
   });
 
-  const textPart = response.content.find((b) => b.type === "text");
-  if (!textPart || textPart.type !== "text") {
-    throw new Error("Model returned no text content");
+  // Resume server-tool loops (pause_turn) a bounded number of times.
+  for (let i = 0; i < 4 && response.stop_reason === "pause_turn"; i++) {
+    messages.push({ role: "assistant", content: response.content });
+    response = await client.messages.create({
+      model: MODEL,
+      max_tokens: 6000,
+      tools,
+      messages,
+    });
   }
 
-  const parsed = extractJson(textPart.text) as Assessment;
+  // Concatenate all text blocks, then extract the final JSON object.
+  const text = response.content
+    .filter((b): b is Anthropic.TextBlock => b.type === "text")
+    .map((b) => b.text)
+    .join("\n");
+  if (!text.trim()) throw new Error("Model returned no text content");
+
+  const parsed = extractJson(text) as Assessment;
   return parsed;
 }

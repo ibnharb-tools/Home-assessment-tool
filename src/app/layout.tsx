@@ -1,11 +1,24 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono, Playfair_Display, Jost } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 
-/* Display + body load from Fontshare (Clash Display + General Sans) via a
-   stylesheet link in <head> below — distinctive, warm, premium; not the
-   generic geometric sans look. Data/numbers stay on JetBrains Mono. */
+/* Headings/titles: Playfair Display (bold). Body/paragraphs: Jost (a free,
+   Futura-like geometric sans — Futura itself is licensed). Data: JetBrains Mono. */
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin"],
+  weight: ["600", "700", "800", "900"],
+  display: "swap",
+});
+
+const jost = Jost({
+  variable: "--font-jost",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  display: "swap",
+});
+
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains",
   subsets: ["latin"],
@@ -46,15 +59,8 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${jetbrainsMono.variable} h-full antialiased`}
+      className={`${playfair.variable} ${jost.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <head>
-        {/* Fontshare: Clash Display (display) + General Sans (body/UI) */}
-        <link
-          rel="stylesheet"
-          href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap"
-        />
-      </head>
       <body className="min-h-full flex flex-col">
         <ThemeProvider>{children}</ThemeProvider>
       </body>
