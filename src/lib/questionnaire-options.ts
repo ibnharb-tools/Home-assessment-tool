@@ -49,7 +49,7 @@ export interface ApplianceDef {
 export const APPLIANCES: ApplianceDef[] = [
   { id: "refrigerator", label: "Refrigerator", icon: "Refrigerator" },
   { id: "freezer", label: "Freezer", icon: "Snowflake" },
-  { id: "stove", label: "Electric Stove / Oven", icon: "CookingPot" },
+  { id: "stove", label: "Electric Stove", icon: "CookingPot" },
   { id: "microwave", label: "Microwave", icon: "Microwave" },
   { id: "dishwasher", label: "Dishwasher", icon: "Utensils" },
   { id: "washer", label: "Washing Machine", icon: "WashingMachine" },
@@ -57,7 +57,7 @@ export const APPLIANCES: ApplianceDef[] = [
   { id: "ac", label: "Air Conditioning", icon: "AirVent" },
   { id: "electric_heat", label: "Electric Heating", icon: "Flame" },
   { id: "heat_pump", label: "Heat Pump", icon: "Thermometer" },
-  { id: "water_heater", label: "Water Heater (electric)", icon: "Droplets" },
+  { id: "water_heater", label: "Water Heater", icon: "Droplets" },
   { id: "tv", label: "Television(s)", icon: "Tv" },
   { id: "computer", label: "Computer(s)", icon: "Monitor" },
   { id: "lighting", label: "Lighting", icon: "Lightbulb" },

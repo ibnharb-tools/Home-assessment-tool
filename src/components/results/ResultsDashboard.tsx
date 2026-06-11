@@ -8,6 +8,7 @@ import type { Assessment, QuestionnaireData } from "@/types";
 import { Logo, ThemeToggle, StatCard, Button } from "@/components/ui";
 import { recomputeFromSelection } from "@/lib/recompute";
 import { AuthModal } from "@/components/auth/AuthModal";
+import { FloorPlanPreview } from "@/components/questionnaire/FloorPlanPreview";
 import { EnergyProfile } from "./EnergyProfile";
 import { Viability } from "./Viability";
 import { Recommendations } from "./Recommendations";
@@ -94,6 +95,7 @@ export function ResultsDashboard({
 
   return (
     <main className="relative min-h-screen px-6 pb-24 pt-6">
+      <div className="graph-paper pointer-events-none fixed inset-0 -z-20" />
       <div className="ambient-glow pointer-events-none fixed inset-0 -z-10" />
 
       <div className="mx-auto max-w-5xl">
@@ -180,6 +182,33 @@ export function ResultsDashboard({
             selected={selected}
             onToggle={toggleTech}
           />
+
+          {/* Floor plan — shows the home layout with selected technologies */}
+          {questionnaireData && (
+            <section aria-labelledby="floorplan-heading">
+              <h2
+                id="floorplan-heading"
+                className="font-display text-2xl font-bold tracking-tight"
+              >
+                Your home layout
+              </h2>
+              <p className="mt-1 text-sm text-ink-soft">
+                Based on your answers. Selected technologies are placed on the
+                plan.
+              </p>
+              <div className="mt-6">
+                <FloorPlanPreview
+                  data={questionnaireData}
+                  systems={
+                    Array.from(selected).filter((t): t is "solar" | "wind" | "geothermal" | "battery" =>
+                      ["solar", "wind", "geothermal", "battery"].includes(t)
+                    )
+                  }
+                />
+              </div>
+            </section>
+          )}
+
           <CostTable
             assessment={assessment}
             selected={selected}

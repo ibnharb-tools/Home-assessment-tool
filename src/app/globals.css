@@ -376,6 +376,30 @@
   /* static — no drift animation (Hallmark: no idle ambient motion) */
 }
 
+/* Engineering graph-paper background for /assess and results.
+   Fine 8px teal grid with stronger major lines every 5 cells (40px). */
+.graph-paper {
+  background-image:
+    /* major horizontal lines (every 5 cells) */
+    linear-gradient(to bottom, color-mix(in srgb, var(--energy-primary) 14%, transparent) 1px, transparent 1px),
+    /* major vertical lines (every 5 cells) */
+    linear-gradient(to right, color-mix(in srgb, var(--energy-primary) 14%, transparent) 1px, transparent 1px),
+    /* minor horizontal lines */
+    linear-gradient(to bottom, color-mix(in srgb, var(--energy-primary) 6%, transparent) 1px, transparent 1px),
+    /* minor vertical lines */
+    linear-gradient(to right, color-mix(in srgb, var(--energy-primary) 6%, transparent) 1px, transparent 1px);
+  background-size: 40px 40px, 40px 40px, 8px 8px, 8px 8px;
+}
+
+[data-theme="dark"] .graph-paper {
+  background-image:
+    linear-gradient(to bottom, color-mix(in srgb, var(--energy-primary) 18%, transparent) 1px, transparent 1px),
+    linear-gradient(to right, color-mix(in srgb, var(--energy-primary) 18%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--energy-primary) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(to right, color-mix(in srgb, var(--energy-primary) 7%, transparent) 1px, transparent 1px);
+  background-size: 40px 40px, 40px 40px, 8px 8px, 8px 8px;
+}
+
 /* Noise / grain overlay (CSS-only SVG fractal noise) */
 .noise-overlay {
   pointer-events: none;

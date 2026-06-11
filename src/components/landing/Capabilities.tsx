@@ -21,7 +21,7 @@ const features: Feature[] = [
   {
     icon: Gauge,
     title: "Smart energy profiling",
-    desc: "An accurate energy profile from your home and appliances — no utility bill required.",
+    desc: "An accurate energy profile from your home and appliances. No utility bill required.",
   },
   {
     icon: MapPinned,
@@ -31,7 +31,7 @@ const features: Feature[] = [
   {
     icon: SunMedium,
     title: "Solar, wind, geothermal & battery",
-    desc: "Every viable renewable technology analyzed — we tell you what actually fits.",
+    desc: "Every viable renewable technology analyzed: we tell you what actually fits.",
   },
   {
     icon: Wallet,
@@ -61,7 +61,7 @@ export function Capabilities() {
           Everything you need to go renewable
         </h2>
         <p className="mt-4 max-w-[52ch] text-ink-soft">
-          One assessment, every angle — from the technologies worth installing
+          One assessment, every angle: from the technologies worth installing
           to the dollars and emissions they move.
         </p>
       </Reveal>

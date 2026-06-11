@@ -287,7 +287,7 @@ export async function buildAssessment(
   const messages: Anthropic.MessageParam[] = [{ role: "user", content }];
   let response = await client.messages.create({
     model: MODEL,
-    max_tokens: 6000,
+    max_tokens: 16000,
     system:
       "You are a precise energy systems engineer. Ground every number in the provided methodology equations or a live source you fetched. After any web searches, your FINAL message must be a single valid JSON object only.",
     tools,
@@ -299,7 +299,7 @@ export async function buildAssessment(
     messages.push({ role: "assistant", content: response.content });
     response = await client.messages.create({
       model: MODEL,
-      max_tokens: 6000,
+      max_tokens: 16000,
       tools,
       messages,
     });

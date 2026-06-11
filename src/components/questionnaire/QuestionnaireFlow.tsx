@@ -12,6 +12,7 @@ import { Step2Energy } from "./steps/Step2Energy";
 import { Step3Appliances } from "./steps/Step3Appliances";
 import { Step4Goals } from "./steps/Step4Goals";
 import { Step5Photos } from "./steps/Step5Photos";
+import { FloorPlanPreview } from "./FloorPlanPreview";
 
 const stepDescriptions = [
   "Tell us about your property.",
@@ -111,71 +112,85 @@ export function QuestionnaireFlow() {
 
   return (
     <div className="relative min-h-screen">
+      <div className="graph-paper pointer-events-none fixed inset-0 -z-20" />
       <div className="ambient-glow pointer-events-none fixed inset-0 -z-10" />
 
       {/* Top bar */}
-      <header className="mx-auto flex max-w-3xl items-center justify-between px-6 py-5">
+      <header className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
         <Logo />
         <ThemeToggle />
       </header>
 
-      <div className="mx-auto max-w-3xl px-6 pb-32">
-        {/* Address confirmation */}
-        <div className="mb-6 inline-flex max-w-full items-center gap-2 rounded-full glass px-4 py-2 text-sm text-ink-soft">
-          <MapPin size={15} className="shrink-0 text-energy" />
-          <span className="truncate">{data.address}</span>
-          <Check size={14} className="shrink-0 text-savings" />
-        </div>
+      <div className="mx-auto max-w-7xl px-6 pb-32">
+        <div className="xl:grid xl:grid-cols-[1fr_524px] xl:items-start xl:gap-12">
+          {/* ── Left: form content ── */}
+          <div>
+            {/* Address confirmation */}
+            <div className="mb-6 inline-flex max-w-full items-center gap-2 rounded-full glass px-4 py-2 text-sm text-ink-soft">
+              <MapPin size={15} className="shrink-0 text-energy" />
+              <span className="truncate">{data.address}</span>
+              <Check size={14} className="shrink-0 text-savings" />
+            </div>
 
-        {/* Progress */}
-        <div className="mb-2 flex items-center justify-between">
-          <span className="caption text-energy">
-            Step {currentStep + 1} of {totalSteps}
-          </span>
-          <span className="text-sm text-ink-faint">
-            {QUESTIONNAIRE_STEPS[currentStep]}
-          </span>
-        </div>
-        <ProgressBar value={progress} />
+            {/* Progress */}
+            <div className="mb-2 flex items-center justify-between">
+              <span className="caption text-energy">
+                Step {currentStep + 1} of {totalSteps}
+              </span>
+              <span className="text-sm text-ink-faint">
+                {QUESTIONNAIRE_STEPS[currentStep]}
+              </span>
+            </div>
+            <ProgressBar value={progress} />
 
-        {/* Heading */}
-        <div className="mt-8">
-          <h1 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
-            {QUESTIONNAIRE_STEPS[currentStep]}
-          </h1>
-          <p className="mt-2 text-ink-soft">{stepDescriptions[currentStep]}</p>
-        </div>
+            {/* Heading */}
+            <div className="mt-8">
+              <h1 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
+                {QUESTIONNAIRE_STEPS[currentStep]}
+              </h1>
+              <p className="mt-2 text-ink-soft">{stepDescriptions[currentStep]}</p>
+            </div>
 
-        {/* Animated step body */}
-        <div className="relative mt-10">
-          <AnimatePresence mode="wait" custom={direction}>
-            <motion.div
-              key={currentStep}
-              custom={direction}
-              initial={{ opacity: 0, x: direction * 48 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: direction * -48 }}
-              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            >
-              {currentStep === 0 && <Step1Property />}
-              {currentStep === 1 && <Step2Energy />}
-              {currentStep === 2 && <Step3Appliances />}
-              {currentStep === 3 && <Step4Goals />}
-              {currentStep === 4 && <Step5Photos />}
-            </motion.div>
-          </AnimatePresence>
-        </div>
+            {/* Animated step body — overflow-x:clip scopes the slide animation
+                so the body-level clip isn't needed to contain it */}
+            <div className="relative mt-10 overflow-x-clip">
+              <AnimatePresence mode="wait" custom={direction}>
+                <motion.div
+                  key={currentStep}
+                  custom={direction}
+                  initial={{ opacity: 0, x: direction * 40 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: direction * -40 }}
+                  transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  {currentStep === 0 && <Step1Property />}
+                  {currentStep === 1 && <Step2Energy />}
+                  {currentStep === 2 && <Step3Appliances />}
+                  {currentStep === 3 && <Step4Goals />}
+                  {currentStep === 4 && <Step5Photos />}
+                </motion.div>
+              </AnimatePresence>
+            </div>
 
-        {error && (
-          <motion.p
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-6 text-sm text-danger"
-            role="alert"
-          >
-            {error}
-          </motion.p>
-        )}
+            {error && (
+              <motion.p
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-6 text-sm text-danger"
+                role="alert"
+              >
+                {error}
+              </motion.p>
+            )}
+          </div>
+
+          {/* ── Right: sticky floor plan panel (xl only) ── */}
+          <div className="hidden xl:block">
+            <div className="sticky top-24 pt-[3.75rem]">
+              <FloorPlanPreview data={data} />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Sticky footer nav */}

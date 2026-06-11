@@ -65,7 +65,7 @@ export function CostTable({
     for (const o of r.options ?? []) {
       if (o.unitPrice + o.installationCost > ceiling) continue;
       rows.push({
-        label: `${o.name} — ${o.supplier}`,
+        label: `${o.name} · ${o.supplier}`,
         unitPrice: o.unitPrice,
         installationCost: o.installationCost,
         maintenanceCostPerYear: o.maintenanceCostPerYear,
@@ -150,7 +150,7 @@ export function CostTable({
                 <td className="px-4 py-3 text-right font-mono tabular-nums">{formatCurrency(totals.unit)}</td>
                 <td className="px-4 py-3 text-right font-mono tabular-nums">{formatCurrency(totals.install)}</td>
                 <td className="px-4 py-3 text-right font-mono tabular-nums">{formatCurrency(totals.maint)}</td>
-                <td className="px-4 py-3 text-right font-mono tabular-nums">—</td>
+                <td className="px-4 py-3 text-right font-mono tabular-nums text-ink-faint">N/A</td>
                 <td className="px-4 py-3 text-right font-mono tabular-nums text-savings">{formatNumber(totals.prod)}</td>
               </tr>
             </tbody>

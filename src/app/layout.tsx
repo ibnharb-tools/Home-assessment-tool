@@ -28,7 +28,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Everstead — AI-Powered Energy Intelligence",
+    default: "Everstead: AI-Powered Energy Intelligence",
     template: "%s · Everstead",
   },
   description:
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     "clean energy",
   ],
   openGraph: {
-    title: "Everstead — AI-Powered Energy Intelligence",
+    title: "Everstead: AI-Powered Energy Intelligence",
     description:
       "Discover your property's clean energy potential in minutes. No utility bill needed.",
     type: "website",

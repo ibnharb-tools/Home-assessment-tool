@@ -16,7 +16,7 @@ import { Reveal } from "@/components/Reveal";
 
 export const metadata: Metadata = {
   title: "What's next",
-  description: "The Everstead roadmap — features in design and on the way.",
+  description: "The Everstead roadmap: features in design and on the way.",
 };
 
 interface Item {
