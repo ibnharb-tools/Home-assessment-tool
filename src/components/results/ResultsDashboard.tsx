@@ -185,20 +185,18 @@ export function ResultsDashboard({
 
           {/* Floor plan — shows the home layout with selected technologies */}
           {questionnaireData && (
-            <section aria-labelledby="floorplan-heading">
-              <h2
-                id="floorplan-heading"
-                className="font-display text-2xl font-bold tracking-tight"
-              >
+            <section aria-labelledby="floorplan-heading" className="text-center">
+              <h2 id="floorplan-heading" className="t-h2">
                 Your home layout
               </h2>
-              <p className="mt-1 text-sm text-ink-soft">
+              <p className="mx-auto mt-3 max-w-[var(--measure)] text-lg text-ink-soft">
                 Based on your answers. Selected technologies are placed on the
                 plan.
               </p>
-              <div className="mt-6">
+              <div className="mt-8 flex justify-center">
                 <FloorPlanPreview
                   data={questionnaireData}
+                  maxSize={720}
                   systems={
                     Array.from(selected).filter((t): t is "solar" | "wind" | "geothermal" | "battery" =>
                       ["solar", "wind", "geothermal", "battery"].includes(t)

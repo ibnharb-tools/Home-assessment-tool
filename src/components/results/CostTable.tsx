@@ -93,10 +93,8 @@ export function CostTable({
   return (
     <Reveal>
       <div>
-        <h2 className="font-display text-3xl font-bold leading-[1.1] tracking-tight md:text-4xl">
-          Cost and energy breakdown
-        </h2>
-        <p className="mt-3 max-w-[60ch] text-ink-soft">
+        <h2 className="t-h2 text-center">Cost and energy breakdown</h2>
+        <p className="mx-auto mt-3 max-w-[var(--measure)] text-center text-ink-soft">
           Per-technology figures for your selected plan
           {questionnaireData?.budget && ceiling !== Infinity
             ? `, filtered to options within your ${formatCurrency(ceiling)} budget`

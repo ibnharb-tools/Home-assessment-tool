@@ -1,14 +1,17 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { AnimatePresence, motion, useMotionValue } from "framer-motion";
 import { buildFloorPlan } from "@/lib/floorplan";
 import { Icon } from "@/components/ui/Icon";
 import type { QuestionnaireData, PlacedRoom, RenewableSystem } from "@/types";
 import { cn } from "@/lib/utils";
 
-const CANVAS_SIZE = 500; // square canvas px
-const PAD = 1.5;          // grid-unit breathing room around the plan
+const DEFAULT_MAX = 500; // default max square-canvas size (px) — preserves the
+                         // in-assessment preview size; the results page opts
+                         // into a larger plan via the maxSize prop.
+const MIN_SIZE = 280;    // never shrink the canvas below this
+const PAD = 1.5;         // grid-unit breathing room around the plan
 
 const ROOM_STYLE: Record<string, { bg: string; border: string; text: string }> = {
   living: { bg: "bg-energy/8", border: "border-energy/35", text: "text-energy" },
@@ -67,8 +70,8 @@ function RoomTile({
 
   const w = room.w * cellPx;
   const h = room.h * cellPx;
-  const showLabel = Math.min(w, h) >= 36;
-  const fontSize = Math.max(9, Math.min(14, cellPx * 0.44));
+  const showLabel = Math.min(w, h) >= 30;
+  const fontSize = Math.max(11, Math.min(18, cellPx * 0.5));
 
   const [isHovered, setIsHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -172,14 +175,34 @@ export function FloorPlanPreview({
   systems = [],
   className,
   interactive = true,
+  maxSize = DEFAULT_MAX,
 }: {
   data: QuestionnaireData;
   systems?: RenewableSystem[];
   className?: string;
   interactive?: boolean;
+  /** Upper bound for the square canvas; it shrinks responsively below this. */
+  maxSize?: number;
 }) {
   const [activeFloor, setActiveFloor] = useState(0);
   const [overrides, setOverrides] = useState<Overrides>({ positions: {}, floors: {} });
+
+  // Responsive square canvas: measure the available width and fit the square
+  // to it (capped at maxSize), so the plan stretches to its container.
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [canvasSize, setCanvasSize] = useState(maxSize);
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const measure = () => {
+      const avail = el.clientWidth;
+      setCanvasSize(Math.round(Math.max(MIN_SIZE, Math.min(maxSize, avail))));
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [maxSize]);
 
   const plan = useMemo(
     () => buildFloorPlan(data, systems),
@@ -196,10 +219,10 @@ export function FloorPlanPreview({
   const floorCount = plan.floors;
   const floor = Math.min(activeFloor, floorCount - 1);
 
-  // Cell size: fit plan (+ padding) within CANVAS_SIZE on both axes
+  // Cell size: fit plan (+ padding) within the measured canvas on both axes
   const totalW = plan.width + PAD * 2;
   const totalH = plan.height + PAD * 2;
-  const cellPx = Math.max(16, Math.min(44, Math.min(CANVAS_SIZE / totalW, CANVAS_SIZE / totalH)));
+  const cellPx = Math.max(18, Math.min(54, Math.min(canvasSize / totalW, canvasSize / totalH)));
   const canvasW = totalW * cellPx;
   const canvasH = totalH * cellPx;
 
@@ -240,11 +263,12 @@ export function FloorPlanPreview({
 
   return (
     <div
+      ref={cardRef}
       className={cn(
-        "overflow-hidden rounded-[18px] border border-line bg-elevated shadow-sm",
+        "w-full overflow-hidden rounded-[18px] border border-line bg-elevated shadow-sm",
         className
       )}
-      style={{ width: CANVAS_SIZE }}
+      style={{ maxWidth: maxSize }}
     >
       {/* Header */}
       <div className="flex h-11 items-center justify-between border-b border-line px-4">
@@ -279,14 +303,14 @@ export function FloorPlanPreview({
       <div
         className="relative overflow-hidden"
         style={{
-          width: CANVAS_SIZE,
-          height: CANVAS_SIZE,
+          width: canvasSize,
+          height: canvasSize,
           backgroundImage: `
             linear-gradient(to right, color-mix(in srgb, var(--energy-primary) 7%, transparent) 1px, transparent 1px),
             linear-gradient(to bottom, color-mix(in srgb, var(--energy-primary) 7%, transparent) 1px, transparent 1px)
           `,
           backgroundSize: `${cellPx}px ${cellPx}px`,
-          backgroundPosition: `${((CANVAS_SIZE - canvasW) / 2) % cellPx}px ${((CANVAS_SIZE - canvasH) / 2) % cellPx}px`,
+          backgroundPosition: `${((canvasSize - canvasW) / 2) % cellPx}px ${((canvasSize - canvasH) / 2) % cellPx}px`,
         }}
       >
         {isEmpty ? (
@@ -301,8 +325,8 @@ export function FloorPlanPreview({
               position: "absolute",
               width: canvasW,
               height: canvasH,
-              left: (CANVAS_SIZE - canvasW) / 2,
-              top: (CANVAS_SIZE - canvasH) / 2,
+              left: (canvasSize - canvasW) / 2,
+              top: (canvasSize - canvasH) / 2,
             }}
           >
             {/* Rooms */}

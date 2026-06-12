@@ -469,6 +469,20 @@
   text-transform: uppercase;
 }
 
+/* Readable measure for centered subtitles/body on the results page. */
+:root {
+  --measure: 68ch;
+}
+
+/* Section-h2 — centered section headers on the results page. */
+.t-h2 {
+  font-family: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  font-size: clamp(2.125rem, 2.5vw + 1rem, 3.25rem);
+}
+
 /* =====================================================================
    LIVING HOME SCENE — animation primitives (turbines, solar shimmer,
    geothermal flow). transform-box: fill-box lets SVG groups rotate about
